@@ -33,8 +33,8 @@ public class Semen extends BaseEntity implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "sire_id")
-    private String sireId;
+    @Column(name = "sire")
+    private String sire;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;

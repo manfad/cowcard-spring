@@ -13,6 +13,9 @@ import {
   History,
   Palette,
   Settings,
+  ClipboardEdit,
+  ClipboardPlus,
+  ExternalLink,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import {
@@ -34,6 +37,12 @@ import { useAuth } from "@/lib/auth";
 const mainNav = [
   { title: "Dashboard", href: "/", icon: Home },
   { title: "Cows", href: "/cows", icon: Tag },
+];
+
+const formNav = [
+  { title: "Dam Form", href: "/dam-form", icon: ClipboardEdit },
+  { title: "Cow Form", href: "/cow-form", icon: ClipboardPlus },
+  { title: "Calf Form", href: "/calf-form", icon: Baby },
 ];
 
 const managementNav = [
@@ -105,6 +114,33 @@ function NavGroup({
   );
 }
 
+function FormNavGroup({
+  items,
+}: {
+  items: { title: string; href: string; icon: React.ComponentType<{ className?: string }> }[];
+}) {
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Form</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {items.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild>
+                <a href={item.href} target="_blank" rel="noopener noreferrer">
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.title}</span>
+                  <ExternalLink className="ml-auto h-3 w-3 text-muted-foreground" />
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  );
+}
+
 export function AppSidebar() {
   const { user, logout } = useAuth();
   const location = useLocation();
@@ -122,6 +158,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <NavGroup label="Main" items={mainNav} pathname={location.pathname} />
+        <FormNavGroup items={formNav} />
         <NavGroup
           label="Management"
           items={managementNav}

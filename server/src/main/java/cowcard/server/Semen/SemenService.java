@@ -14,4 +14,25 @@ public class SemenService {
     public List<Semen> findAll() {
         return semenRepository.findAll();
     }
+
+    public Semen create(Semen semen) {
+        return semenRepository.save(semen);
+    }
+
+    public Semen update(Integer id, Semen semen) {
+        Semen e = semenRepository.findById(id).orElseThrow();
+        e.setName(semen.getName());
+        e.setSire(semen.getSire());
+        e.setDate(semen.getDate());
+        e.setStraw(semen.getStraw());
+        e.setBull(semen.getBull());
+        e.setRemark(semen.getRemark());
+        return semenRepository.save(e);
+    }
+
+    public Semen toggleBull(Integer id) {
+        Semen e = semenRepository.findById(id).orElseThrow();
+        e.setBull(e.getBull() == null || !e.getBull());
+        return semenRepository.save(e);
+    }
 }

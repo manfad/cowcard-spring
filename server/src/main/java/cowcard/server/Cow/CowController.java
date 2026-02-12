@@ -3,11 +3,13 @@ package cowcard.server.Cow;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cowcard.server.Common.ServerRes;
+import cowcard.server.User.UserDetail;
 
 @RestController
 @RequestMapping("/cow")
@@ -17,7 +19,11 @@ public class CowController {
     private CowService cowService;
 
     @GetMapping("/all")
-    public ServerRes<List<Cow>> getAll() {
-        return ServerRes.success(cowService.findAll());
+    public ServerRes<List<CowView>> getAll() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof UserDetail ud && ud.isAdmin()) {
+            return ServerRes.success(cowService.findAllView());
+        }
+        return ServerRes.success(cowService.findAllActiveView());
     }
 }

@@ -83,4 +83,7 @@ public class Cow extends BaseEntity implements Serializable {
 
     @Column(name = "remark")
     private String remark;
+
+    @Column(name = "active")
+    private Boolean active;
 }

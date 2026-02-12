@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DamFormRouteImport } from './routes/dam-form'
+import { Route as CowFormRouteImport } from './routes/cow-form'
+import { Route as CalfFormRouteImport } from './routes/calf-form'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AuthIndexRouteImport } from './routes/_auth/index'
 import { Route as AuthUsersIndexRouteImport } from './routes/_auth/users/index'
@@ -41,6 +44,21 @@ const RegisterRoute = RegisterRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DamFormRoute = DamFormRouteImport.update({
+  id: '/dam-form',
+  path: '/dam-form',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CowFormRoute = CowFormRouteImport.update({
+  id: '/cow-form',
+  path: '/cow-form',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalfFormRoute = CalfFormRouteImport.update({
+  id: '/calf-form',
+  path: '/calf-form',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -154,6 +172,9 @@ const AuthAiRecordsIndexRoute = AuthAiRecordsIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthIndexRoute
+  '/calf-form': typeof CalfFormRoute
+  '/cow-form': typeof CowFormRoute
+  '/dam-form': typeof DamFormRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/ai-records/': typeof AuthAiRecordsIndexRoute
@@ -177,6 +198,9 @@ export interface FileRoutesByFullPath {
   '/users/': typeof AuthUsersIndexRoute
 }
 export interface FileRoutesByTo {
+  '/calf-form': typeof CalfFormRoute
+  '/cow-form': typeof CowFormRoute
+  '/dam-form': typeof DamFormRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/': typeof AuthIndexRoute
@@ -203,6 +227,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteWithChildren
+  '/calf-form': typeof CalfFormRoute
+  '/cow-form': typeof CowFormRoute
+  '/dam-form': typeof DamFormRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/_auth/': typeof AuthIndexRoute
@@ -230,6 +257,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/calf-form'
+    | '/cow-form'
+    | '/dam-form'
     | '/login'
     | '/register'
     | '/ai-records/'
@@ -253,6 +283,9 @@ export interface FileRouteTypes {
     | '/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/calf-form'
+    | '/cow-form'
+    | '/dam-form'
     | '/login'
     | '/register'
     | '/'
@@ -278,6 +311,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_auth'
+    | '/calf-form'
+    | '/cow-form'
+    | '/dam-form'
     | '/login'
     | '/register'
     | '/_auth/'
@@ -304,6 +340,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
+  CalfFormRoute: typeof CalfFormRoute
+  CowFormRoute: typeof CowFormRoute
+  DamFormRoute: typeof DamFormRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
 }
@@ -322,6 +361,27 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dam-form': {
+      id: '/dam-form'
+      path: '/dam-form'
+      fullPath: '/dam-form'
+      preLoaderRoute: typeof DamFormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cow-form': {
+      id: '/cow-form'
+      path: '/cow-form'
+      fullPath: '/cow-form'
+      preLoaderRoute: typeof CowFormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calf-form': {
+      id: '/calf-form'
+      path: '/calf-form'
+      fullPath: '/calf-form'
+      preLoaderRoute: typeof CalfFormRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -524,6 +584,9 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
+  CalfFormRoute: CalfFormRoute,
+  CowFormRoute: CowFormRoute,
+  DamFormRoute: DamFormRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
 }

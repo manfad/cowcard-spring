@@ -5,9 +5,11 @@ import type {
   RegisterRequest,
   WhoAmI,
   Cow,
+  CowView,
   Feedlot,
   Inseminator,
   Semen,
+  SemenFormData,
   Transponder,
   AiRecord,
   CalfRecord,
@@ -20,8 +22,11 @@ import type {
   Color,
   CowGender,
   CowRole,
+  CowRoleFormData,
   CowStatus,
   PdStatus,
+  LookupFormData,
+  DamOption,
   User,
 } from "./types";
 
@@ -41,7 +46,44 @@ export const authApi = {
 
 // Main entities
 export const cowApi = {
-  getAll: () => api.get<ServerRes<Cow[]>>("/cow/all"),
+  getAll: () => api.get<ServerRes<CowView[]>>("/cow/all"),
+};
+
+// Public form endpoints (no auth required)
+export const formApi = {
+  createDam: (data: { tag: string; statusId: number; remark?: string }) =>
+    api.post<ServerRes<Cow>>("/form/dam", data),
+  getCowStatuses: () =>
+    api.get<ServerRes<CowStatus[]>>("/form/cow-statuses"),
+  createCow: (data: {
+    tag: string;
+    genderId: number;
+    roleId: number;
+    colorId: number;
+    dob: string;
+    weight: number | null;
+    statusId: number;
+    damId: number | null;
+    semenId: number | null;
+    remark: string;
+  }) => api.post<ServerRes<Cow>>("/form/cow", data),
+  getCowGenders: () =>
+    api.get<ServerRes<CowGender[]>>("/form/cow-genders"),
+  getCowRoles: (genderId: number) =>
+    api.get<ServerRes<CowRole[]>>(`/form/cow-roles?genderId=${genderId}`),
+  getColors: () => api.get<ServerRes<Color[]>>("/form/colors"),
+  getSemen: () => api.get<ServerRes<Semen[]>>("/form/semen"),
+  getDams: () => api.get<ServerRes<DamOption[]>>("/form/dams"),
+  createCalf: (data: {
+    tag: string;
+    genderId: number;
+    damId: number | null;
+    semenId: number | null;
+    dob: string;
+    weight: number | null;
+    colorId: number;
+    remark: string;
+  }) => api.post<ServerRes<Cow>>("/form/calf", data),
 };
 
 export const feedlotApi = {
@@ -54,6 +96,12 @@ export const inseminatorApi = {
 
 export const semenApi = {
   getAll: () => api.get<ServerRes<Semen[]>>("/semen/all"),
+  create: (data: SemenFormData) =>
+    api.post<ServerRes<Semen>>("/semen", data),
+  update: (id: number, data: SemenFormData) =>
+    api.put<ServerRes<Semen>>(`/semen/${id}`, data),
+  toggleBull: (id: number) =>
+    api.put<ServerRes<Semen>>(`/semen/toggle-bull/${id}`),
 };
 
 export const transponderApi = {
@@ -94,30 +142,72 @@ export const pregnancyDiagnosisApi = {
 // Lookup entities
 export const aiStatusApi = {
   getAll: () => api.get<ServerRes<AiStatus[]>>("/ai-status/all"),
+  toggleActive: (id: number) =>
+    api.put<ServerRes<AiStatus>>(`/ai-status/toggle-active/${id}`),
+  create: (data: LookupFormData) =>
+    api.post<ServerRes<AiStatus>>("/ai-status", data),
+  update: (id: number, data: LookupFormData) =>
+    api.put<ServerRes<AiStatus>>(`/ai-status/${id}`, data),
 };
 
 export const calfStatusApi = {
   getAll: () => api.get<ServerRes<CalfStatus[]>>("/calf-status/all"),
+  toggleActive: (id: number) =>
+    api.put<ServerRes<CalfStatus>>(`/calf-status/toggle-active/${id}`),
+  create: (data: LookupFormData) =>
+    api.post<ServerRes<CalfStatus>>("/calf-status", data),
+  update: (id: number, data: LookupFormData) =>
+    api.put<ServerRes<CalfStatus>>(`/calf-status/${id}`, data),
 };
 
 export const colorApi = {
   getAll: () => api.get<ServerRes<Color[]>>("/color/all"),
+  toggleActive: (id: number) =>
+    api.put<ServerRes<Color>>(`/color/toggle-active/${id}`),
+  create: (data: LookupFormData) =>
+    api.post<ServerRes<Color>>("/color", data),
+  update: (id: number, data: LookupFormData) =>
+    api.put<ServerRes<Color>>(`/color/${id}`, data),
 };
 
 export const cowGenderApi = {
   getAll: () => api.get<ServerRes<CowGender[]>>("/cow-gender/all"),
+  toggleActive: (id: number) =>
+    api.put<ServerRes<CowGender>>(`/cow-gender/toggle-active/${id}`),
+  create: (data: LookupFormData) =>
+    api.post<ServerRes<CowGender>>("/cow-gender", data),
+  update: (id: number, data: LookupFormData) =>
+    api.put<ServerRes<CowGender>>(`/cow-gender/${id}`, data),
 };
 
 export const cowRoleApi = {
   getAll: () => api.get<ServerRes<CowRole[]>>("/cow-role/all"),
+  toggleActive: (id: number) =>
+    api.put<ServerRes<CowRole>>(`/cow-role/toggle-active/${id}`),
+  create: (data: CowRoleFormData) =>
+    api.post<ServerRes<CowRole>>("/cow-role", data),
+  update: (id: number, data: CowRoleFormData) =>
+    api.put<ServerRes<CowRole>>(`/cow-role/${id}`, data),
 };
 
 export const cowStatusApi = {
   getAll: () => api.get<ServerRes<CowStatus[]>>("/cow-status/all"),
+  toggleActive: (id: number) =>
+    api.put<ServerRes<CowStatus>>(`/cow-status/toggle-active/${id}`),
+  create: (data: LookupFormData) =>
+    api.post<ServerRes<CowStatus>>("/cow-status", data),
+  update: (id: number, data: LookupFormData) =>
+    api.put<ServerRes<CowStatus>>(`/cow-status/${id}`, data),
 };
 
 export const pdStatusApi = {
   getAll: () => api.get<ServerRes<PdStatus[]>>("/pd-status/all"),
+  toggleActive: (id: number) =>
+    api.put<ServerRes<PdStatus>>(`/pd-status/toggle-active/${id}`),
+  create: (data: LookupFormData) =>
+    api.post<ServerRes<PdStatus>>("/pd-status", data),
+  update: (id: number, data: LookupFormData) =>
+    api.put<ServerRes<PdStatus>>(`/pd-status/${id}`, data),
 };
 
 // Users

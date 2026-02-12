@@ -23,6 +23,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseCookie;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -62,6 +63,7 @@ public class AuthController {
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		user.setApproved(false);
 		user.setActive(true);
+		user.setCreatedAt(LocalDateTime.now());
 		userRepository.save(user);
 
 		return ServerRes.success("Registration successful");
@@ -88,7 +90,8 @@ public class AuthController {
 				.build();
 
 		response.addHeader("Set-Cookie", jwtCookie.toString());
-
+		user.setLastLogin(LocalDateTime.now());
+		userRepository.save(user);
 		return ServerRes.success("Login successful");
 	}
 
@@ -116,6 +119,6 @@ public class AuthController {
 					userDetail.getName(), userDetail.isAdmin()));
 		}
 
-		return ServerRes.error("Unauthorized");
+		return ServerRes.<WhoAmI>error("Unauthorized");
 	}
 }

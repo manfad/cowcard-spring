@@ -40,13 +40,35 @@ export interface LookupEntity extends BaseEntity {
   active: boolean | null;
 }
 
+export interface LookupFormData {
+  name: string;
+  remark: string;
+}
+
 export type AiStatus = LookupEntity;
 export type CalfStatus = LookupEntity;
 export type Color = LookupEntity;
 export type CowGender = LookupEntity;
-export type CowRole = LookupEntity;
+export interface CowRole extends LookupEntity {
+  cowGenders: CowGender[];
+}
 export type CowStatus = LookupEntity;
 export type PdStatus = LookupEntity;
+
+export interface CowRoleFormData {
+  name: string;
+  remark: string;
+  cowGenderIds: number[];
+}
+
+export interface SemenFormData {
+  name: string;
+  sire: string;
+  date: string;
+  straw: number | null;
+  bull: boolean;
+  remark: string;
+}
 
 // Main entities
 export interface Feedlot extends BaseEntity {
@@ -66,7 +88,7 @@ export interface Inseminator extends BaseEntity {
 export interface Semen extends BaseEntity {
   id: number;
   name: string;
-  sireId: string | null;
+  sire: string | null;
   date: string;
   straw: number | null;
   bull: boolean | null;
@@ -96,6 +118,19 @@ export interface Cow extends BaseEntity {
   semen: Semen | null;
   currentFeedlot: Feedlot | null;
   currentTransponder: Transponder | null;
+}
+
+export interface CowView {
+  id: number;
+  tag: string;
+  gender: string | null;
+  role: string | null;
+  status: string | null;
+  weight: number | null;
+  feedlot: string | null;
+  transponder: string | null;
+  remark: string | null;
+  active: boolean | null;
 }
 
 // Record entities
@@ -152,6 +187,12 @@ export interface PregnancyDiagnosis extends BaseEntity {
   aiRecord: { id: number; code: string } | null;
   diagnosisBy: { id: number; name: string } | null;
   pdStatus: { id: number; name: string } | null;
+}
+
+// Form types
+export interface DamOption {
+  id: number;
+  tag: string;
 }
 
 // User
