@@ -16,7 +16,10 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import cowcard.server.Common.BaseEntity;
+import cowcard.server.Cow.Cow;
 import cowcard.server.Feedlot.Feedlot;
 
 @Getter
@@ -36,8 +39,10 @@ public class Transponder extends BaseEntity implements Serializable {
     @Column(name = "code", nullable = false)
     private String code;
 
-    @Column(name = "current_cow")
-    private Integer currentCow;
+    @ManyToOne
+    @JoinColumn(name = "current_cow", referencedColumnName = "id")
+    @JsonIgnoreProperties("currentTransponder")
+    private Cow currentCow;
 
     @ManyToOne
     @JoinColumn(name = "current_feedlot", referencedColumnName = "id")

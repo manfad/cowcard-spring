@@ -14,6 +14,7 @@ import {
 } from "@tanstack/react-table";
 import { Pencil, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 import type { Semen, SemenFormData } from "@/lib/types";
 import { semenApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -92,17 +93,26 @@ function SemenPage() {
   const toggleBullMutation = useMutation({
     mutationFn: semenApi.toggleBull,
     onSuccess: () => qc.invalidateQueries({ queryKey: ["semen"] }),
+    onError: () => toast.error("Failed to toggle bull status"),
   });
 
   const createMutation = useMutation({
     mutationFn: semenApi.create,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["semen"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["semen"] });
+      toast.success("Semen record created");
+    },
+    onError: () => toast.error("Failed to create semen record"),
   });
 
   const updateMutation = useMutation({
     mutationFn: (vars: { id: number; data: SemenFormData }) =>
       semenApi.update(vars.id, vars.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["semen"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["semen"] });
+      toast.success("Semen record updated");
+    },
+    onError: () => toast.error("Failed to update semen record"),
   });
 
   const form = useForm<SemenFormValues>({
@@ -158,7 +168,11 @@ function SemenPage() {
   };
 
   const columns = [
-    columnHelper.accessor("id", { header: "ID" }),
+    columnHelper.display({
+      id: "index",
+      header: "#",
+      cell: ({ row }) => row.index + 1,
+    }),
     columnHelper.accessor("name", { header: "Name" }),
     columnHelper.accessor("sire", {
       header: "Sire",

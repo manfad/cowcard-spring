@@ -9,6 +9,7 @@ import {
   createColumnHelper,
 } from "@tanstack/react-table";
 import { Pencil } from "lucide-react";
+import { toast } from "sonner";
 import type { LookupEntity, LookupFormData } from "@/lib/types";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -73,17 +74,26 @@ export function LookupPage({
   const toggleMutation = useMutation({
     mutationFn: toggleActiveFn,
     onSuccess: () => qc.invalidateQueries({ queryKey }),
+    onError: () => toast.error("Failed to toggle status"),
   });
 
   const createMutation = useMutation({
     mutationFn: createFn,
-    onSuccess: () => qc.invalidateQueries({ queryKey }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey });
+      toast.success(`${entityLabel} created`);
+    },
+    onError: () => toast.error(`Failed to create ${entityLabel.toLowerCase()}`),
   });
 
   const updateMutation = useMutation({
     mutationFn: (vars: { id: number; data: LookupFormData }) =>
       updateFn(vars.id, vars.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey });
+      toast.success(`${entityLabel} updated`);
+    },
+    onError: () => toast.error(`Failed to update ${entityLabel.toLowerCase()}`),
   });
 
   const handleAdd = () => {

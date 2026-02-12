@@ -155,9 +155,11 @@ export function CowPage() {
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="w-60"
             />
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Add New
+            <Button asChild>
+              <a href="/cow-form" target="_blank" rel="noopener noreferrer">
+                <Plus className="mr-2 h-4 w-4" />
+                Add New
+              </a>
             </Button>
           </CardAction>
         </CardHeader>

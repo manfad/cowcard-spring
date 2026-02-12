@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,5 +20,15 @@ public class CowTransponderHistoryController {
     @GetMapping("/all")
     public ServerRes<List<CowTransponderHistory>> getAll() {
         return ServerRes.success(cowTransponderHistoryService.findAll());
+    }
+
+    @GetMapping("/by-transponder/{transponderId}")
+    public ServerRes<List<CowTransponderHistory>> getByTransponder(@PathVariable Integer transponderId) {
+        return ServerRes.success(cowTransponderHistoryService.findByTransponderId(transponderId));
+    }
+
+    @GetMapping("/by-cow/{cowId}")
+    public ServerRes<List<CowTransponderHistory>> getByCow(@PathVariable Integer cowId) {
+        return ServerRes.success(cowTransponderHistoryService.findByCowId(cowId));
     }
 }

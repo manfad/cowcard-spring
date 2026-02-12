@@ -45,7 +45,7 @@ const calfFormSchema = z.object({
   genderId: z.string().min(1, "Gender is required"),
   damId: z.string().optional(),
   semenId: z.string().optional(),
-  dob: z.date({ required_error: "Date of birth is required" }),
+  dob: z.date({ error: "Date of birth is required" }),
   weight: z.string().optional(),
   colorId: z.string().min(1, "Color is required"),
   remark: z.string().optional(),
@@ -69,7 +69,7 @@ export function CalfForm() {
   });
 
   // Fetch genders
-  const { data: genders, isLoading: gendersLoading } = useQuery({
+  const { data: genders } = useQuery({
     queryKey: ["form-cow-genders"],
     queryFn: () => formApi.getCowGenders().then((r) => r.data.data!),
   });

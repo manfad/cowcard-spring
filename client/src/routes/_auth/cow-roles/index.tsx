@@ -13,6 +13,7 @@ import {
   createColumnHelper,
 } from "@tanstack/react-table";
 import { Pencil } from "lucide-react";
+import { toast } from "sonner";
 import type { CowRole, CowRoleFormData } from "@/lib/types";
 import { cowRoleApi, cowGenderApi } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -98,17 +99,26 @@ function CowRolesPage() {
   const toggleMutation = useMutation({
     mutationFn: cowRoleApi.toggleActive,
     onSuccess: () => qc.invalidateQueries({ queryKey: ["cow-roles"] }),
+    onError: () => toast.error("Failed to toggle cow role status"),
   });
 
   const createMutation = useMutation({
     mutationFn: cowRoleApi.create,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["cow-roles"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["cow-roles"] });
+      toast.success("Cow role created");
+    },
+    onError: () => toast.error("Failed to create cow role"),
   });
 
   const updateMutation = useMutation({
     mutationFn: (vars: { id: number; data: CowRoleFormData }) =>
       cowRoleApi.update(vars.id, vars.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["cow-roles"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["cow-roles"] });
+      toast.success("Cow role updated");
+    },
+    onError: () => toast.error("Failed to update cow role"),
   });
 
   const form = useForm<CowRoleFormValues>({

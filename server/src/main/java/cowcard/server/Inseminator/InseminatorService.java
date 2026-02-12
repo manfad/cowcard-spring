@@ -14,4 +14,26 @@ public class InseminatorService {
     public List<Inseminator> findAll() {
         return inseminatorRepository.findAll();
     }
+
+    public List<Inseminator> findAllActive() {
+        return inseminatorRepository.findByActiveTrue();
+    }
+
+    public Inseminator toggleActive(Integer id) {
+        Inseminator e = inseminatorRepository.findById(id).orElseThrow();
+        e.setActive(e.getActive() == null || !e.getActive());
+        return inseminatorRepository.save(e);
+    }
+
+    public Inseminator create(Inseminator inseminator) {
+        inseminator.setActive(true);
+        return inseminatorRepository.save(inseminator);
+    }
+
+    public Inseminator update(Integer id, Inseminator inseminator) {
+        Inseminator e = inseminatorRepository.findById(id).orElseThrow();
+        e.setName(inseminator.getName());
+        e.setRemark(inseminator.getRemark());
+        return inseminatorRepository.save(e);
+    }
 }

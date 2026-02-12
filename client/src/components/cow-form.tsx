@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -46,7 +47,7 @@ const cowFormSchema = z.object({
   genderId: z.string().min(1, "Gender is required"),
   roleId: z.string().min(1, "Role is required"),
   colorId: z.string().min(1, "Color is required"),
-  dob: z.date({ required_error: "Date of birth is required" }),
+  dob: z.date({ error: "Date of birth is required" }),
   weight: z.string().optional(),
   statusId: z.string().min(1, "Status is required"),
   addBirthRecord: z.boolean(),
@@ -193,32 +194,29 @@ export function CowForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Gender</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select gender" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          className="flex gap-4 pt-1"
+                        >
                           {gendersLoading ? (
-                            <SelectItem value="loading" disabled>
-                              Loading...
-                            </SelectItem>
+                            <span className="text-sm text-muted-foreground">Loading...</span>
                           ) : (
                             genders?.map((gender) => (
-                              <SelectItem
-                                key={gender.id}
-                                value={String(gender.id)}
-                              >
-                                {gender.name}
-                              </SelectItem>
+                              <div key={gender.id} className="flex items-center gap-2">
+                                <RadioGroupItem
+                                  value={String(gender.id)}
+                                  id={`gender-${gender.id}`}
+                                />
+                                <Label htmlFor={`gender-${gender.id}`}>
+                                  {gender.name}
+                                </Label>
+                              </div>
                             ))
                           )}
-                        </SelectContent>
-                      </Select>
+                        </RadioGroup>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

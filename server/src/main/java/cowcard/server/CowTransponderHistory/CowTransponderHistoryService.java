@@ -14,4 +14,12 @@ public class CowTransponderHistoryService {
     public List<CowTransponderHistory> findAll() {
         return cowTransponderHistoryRepository.findAll();
     }
+
+    public List<CowTransponderHistory> findByTransponderId(Integer transponderId) {
+        return cowTransponderHistoryRepository.findByTransponder_IdOrderByAssignedAtDesc(transponderId);
+    }
+
+    public List<CowTransponderHistory> findByCowId(Integer cowId) {
+        return cowTransponderHistoryRepository.findByCow_IdOrderByAssignedAtDesc(cowId);
+    }
 }

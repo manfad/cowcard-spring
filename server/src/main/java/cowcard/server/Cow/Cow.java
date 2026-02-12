@@ -22,6 +22,8 @@ import cowcard.server.Common.BaseEntity;
 import cowcard.server.CowGender.CowGender;
 import cowcard.server.CowRole.CowRole;
 import cowcard.server.CowStatus.CowStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import cowcard.server.Feedlot.Feedlot;
 import cowcard.server.Semen.Semen;
 import cowcard.server.Transponder.Transponder;
@@ -79,6 +81,7 @@ public class Cow extends BaseEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "current_transponder_id", referencedColumnName = "id")
+    @JsonIgnoreProperties("currentCow")
     private Transponder currentTransponder;
 
     @Column(name = "remark")

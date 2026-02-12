@@ -18,18 +18,15 @@ import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AuthIndexRouteImport } from './routes/_auth/index'
 import { Route as AuthUsersIndexRouteImport } from './routes/_auth/users/index'
 import { Route as AuthTranspondersIndexRouteImport } from './routes/_auth/transponders/index'
-import { Route as AuthTransponderRecordsIndexRouteImport } from './routes/_auth/transponder-records/index'
 import { Route as AuthSemenIndexRouteImport } from './routes/_auth/semen/index'
 import { Route as AuthPregnancyDiagnosisIndexRouteImport } from './routes/_auth/pregnancy-diagnosis/index'
 import { Route as AuthPdStatusesIndexRouteImport } from './routes/_auth/pd-statuses/index'
 import { Route as AuthInseminatorsIndexRouteImport } from './routes/_auth/inseminators/index'
 import { Route as AuthFeedlotsIndexRouteImport } from './routes/_auth/feedlots/index'
 import { Route as AuthCowsIndexRouteImport } from './routes/_auth/cows/index'
-import { Route as AuthCowTransponderHistoryIndexRouteImport } from './routes/_auth/cow-transponder-history/index'
 import { Route as AuthCowStatusesIndexRouteImport } from './routes/_auth/cow-statuses/index'
 import { Route as AuthCowRolesIndexRouteImport } from './routes/_auth/cow-roles/index'
 import { Route as AuthCowGendersIndexRouteImport } from './routes/_auth/cow-genders/index'
-import { Route as AuthCowFeedlotHistoryIndexRouteImport } from './routes/_auth/cow-feedlot-history/index'
 import { Route as AuthColorsIndexRouteImport } from './routes/_auth/colors/index'
 import { Route as AuthCalfStatusesIndexRouteImport } from './routes/_auth/calf-statuses/index'
 import { Route as AuthCalfRecordsIndexRouteImport } from './routes/_auth/calf-records/index'
@@ -80,12 +77,6 @@ const AuthTranspondersIndexRoute = AuthTranspondersIndexRouteImport.update({
   path: '/transponders/',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthTransponderRecordsIndexRoute =
-  AuthTransponderRecordsIndexRouteImport.update({
-    id: '/transponder-records/',
-    path: '/transponder-records/',
-    getParentRoute: () => AuthRoute,
-  } as any)
 const AuthSemenIndexRoute = AuthSemenIndexRouteImport.update({
   id: '/semen/',
   path: '/semen/',
@@ -117,12 +108,6 @@ const AuthCowsIndexRoute = AuthCowsIndexRouteImport.update({
   path: '/cows/',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthCowTransponderHistoryIndexRoute =
-  AuthCowTransponderHistoryIndexRouteImport.update({
-    id: '/cow-transponder-history/',
-    path: '/cow-transponder-history/',
-    getParentRoute: () => AuthRoute,
-  } as any)
 const AuthCowStatusesIndexRoute = AuthCowStatusesIndexRouteImport.update({
   id: '/cow-statuses/',
   path: '/cow-statuses/',
@@ -138,12 +123,6 @@ const AuthCowGendersIndexRoute = AuthCowGendersIndexRouteImport.update({
   path: '/cow-genders/',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthCowFeedlotHistoryIndexRoute =
-  AuthCowFeedlotHistoryIndexRouteImport.update({
-    id: '/cow-feedlot-history/',
-    path: '/cow-feedlot-history/',
-    getParentRoute: () => AuthRoute,
-  } as any)
 const AuthColorsIndexRoute = AuthColorsIndexRouteImport.update({
   id: '/colors/',
   path: '/colors/',
@@ -182,18 +161,15 @@ export interface FileRoutesByFullPath {
   '/calf-records/': typeof AuthCalfRecordsIndexRoute
   '/calf-statuses/': typeof AuthCalfStatusesIndexRoute
   '/colors/': typeof AuthColorsIndexRoute
-  '/cow-feedlot-history/': typeof AuthCowFeedlotHistoryIndexRoute
   '/cow-genders/': typeof AuthCowGendersIndexRoute
   '/cow-roles/': typeof AuthCowRolesIndexRoute
   '/cow-statuses/': typeof AuthCowStatusesIndexRoute
-  '/cow-transponder-history/': typeof AuthCowTransponderHistoryIndexRoute
   '/cows/': typeof AuthCowsIndexRoute
   '/feedlots/': typeof AuthFeedlotsIndexRoute
   '/inseminators/': typeof AuthInseminatorsIndexRoute
   '/pd-statuses/': typeof AuthPdStatusesIndexRoute
   '/pregnancy-diagnosis/': typeof AuthPregnancyDiagnosisIndexRoute
   '/semen/': typeof AuthSemenIndexRoute
-  '/transponder-records/': typeof AuthTransponderRecordsIndexRoute
   '/transponders/': typeof AuthTranspondersIndexRoute
   '/users/': typeof AuthUsersIndexRoute
 }
@@ -209,18 +185,15 @@ export interface FileRoutesByTo {
   '/calf-records': typeof AuthCalfRecordsIndexRoute
   '/calf-statuses': typeof AuthCalfStatusesIndexRoute
   '/colors': typeof AuthColorsIndexRoute
-  '/cow-feedlot-history': typeof AuthCowFeedlotHistoryIndexRoute
   '/cow-genders': typeof AuthCowGendersIndexRoute
   '/cow-roles': typeof AuthCowRolesIndexRoute
   '/cow-statuses': typeof AuthCowStatusesIndexRoute
-  '/cow-transponder-history': typeof AuthCowTransponderHistoryIndexRoute
   '/cows': typeof AuthCowsIndexRoute
   '/feedlots': typeof AuthFeedlotsIndexRoute
   '/inseminators': typeof AuthInseminatorsIndexRoute
   '/pd-statuses': typeof AuthPdStatusesIndexRoute
   '/pregnancy-diagnosis': typeof AuthPregnancyDiagnosisIndexRoute
   '/semen': typeof AuthSemenIndexRoute
-  '/transponder-records': typeof AuthTransponderRecordsIndexRoute
   '/transponders': typeof AuthTranspondersIndexRoute
   '/users': typeof AuthUsersIndexRoute
 }
@@ -238,18 +211,15 @@ export interface FileRoutesById {
   '/_auth/calf-records/': typeof AuthCalfRecordsIndexRoute
   '/_auth/calf-statuses/': typeof AuthCalfStatusesIndexRoute
   '/_auth/colors/': typeof AuthColorsIndexRoute
-  '/_auth/cow-feedlot-history/': typeof AuthCowFeedlotHistoryIndexRoute
   '/_auth/cow-genders/': typeof AuthCowGendersIndexRoute
   '/_auth/cow-roles/': typeof AuthCowRolesIndexRoute
   '/_auth/cow-statuses/': typeof AuthCowStatusesIndexRoute
-  '/_auth/cow-transponder-history/': typeof AuthCowTransponderHistoryIndexRoute
   '/_auth/cows/': typeof AuthCowsIndexRoute
   '/_auth/feedlots/': typeof AuthFeedlotsIndexRoute
   '/_auth/inseminators/': typeof AuthInseminatorsIndexRoute
   '/_auth/pd-statuses/': typeof AuthPdStatusesIndexRoute
   '/_auth/pregnancy-diagnosis/': typeof AuthPregnancyDiagnosisIndexRoute
   '/_auth/semen/': typeof AuthSemenIndexRoute
-  '/_auth/transponder-records/': typeof AuthTransponderRecordsIndexRoute
   '/_auth/transponders/': typeof AuthTranspondersIndexRoute
   '/_auth/users/': typeof AuthUsersIndexRoute
 }
@@ -267,18 +237,15 @@ export interface FileRouteTypes {
     | '/calf-records/'
     | '/calf-statuses/'
     | '/colors/'
-    | '/cow-feedlot-history/'
     | '/cow-genders/'
     | '/cow-roles/'
     | '/cow-statuses/'
-    | '/cow-transponder-history/'
     | '/cows/'
     | '/feedlots/'
     | '/inseminators/'
     | '/pd-statuses/'
     | '/pregnancy-diagnosis/'
     | '/semen/'
-    | '/transponder-records/'
     | '/transponders/'
     | '/users/'
   fileRoutesByTo: FileRoutesByTo
@@ -294,18 +261,15 @@ export interface FileRouteTypes {
     | '/calf-records'
     | '/calf-statuses'
     | '/colors'
-    | '/cow-feedlot-history'
     | '/cow-genders'
     | '/cow-roles'
     | '/cow-statuses'
-    | '/cow-transponder-history'
     | '/cows'
     | '/feedlots'
     | '/inseminators'
     | '/pd-statuses'
     | '/pregnancy-diagnosis'
     | '/semen'
-    | '/transponder-records'
     | '/transponders'
     | '/users'
   id:
@@ -322,18 +286,15 @@ export interface FileRouteTypes {
     | '/_auth/calf-records/'
     | '/_auth/calf-statuses/'
     | '/_auth/colors/'
-    | '/_auth/cow-feedlot-history/'
     | '/_auth/cow-genders/'
     | '/_auth/cow-roles/'
     | '/_auth/cow-statuses/'
-    | '/_auth/cow-transponder-history/'
     | '/_auth/cows/'
     | '/_auth/feedlots/'
     | '/_auth/inseminators/'
     | '/_auth/pd-statuses/'
     | '/_auth/pregnancy-diagnosis/'
     | '/_auth/semen/'
-    | '/_auth/transponder-records/'
     | '/_auth/transponders/'
     | '/_auth/users/'
   fileRoutesById: FileRoutesById
@@ -412,13 +373,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthTranspondersIndexRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/transponder-records/': {
-      id: '/_auth/transponder-records/'
-      path: '/transponder-records'
-      fullPath: '/transponder-records/'
-      preLoaderRoute: typeof AuthTransponderRecordsIndexRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/_auth/semen/': {
       id: '/_auth/semen/'
       path: '/semen'
@@ -461,13 +415,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCowsIndexRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/cow-transponder-history/': {
-      id: '/_auth/cow-transponder-history/'
-      path: '/cow-transponder-history'
-      fullPath: '/cow-transponder-history/'
-      preLoaderRoute: typeof AuthCowTransponderHistoryIndexRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/_auth/cow-statuses/': {
       id: '/_auth/cow-statuses/'
       path: '/cow-statuses'
@@ -487,13 +434,6 @@ declare module '@tanstack/react-router' {
       path: '/cow-genders'
       fullPath: '/cow-genders/'
       preLoaderRoute: typeof AuthCowGendersIndexRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/cow-feedlot-history/': {
-      id: '/_auth/cow-feedlot-history/'
-      path: '/cow-feedlot-history'
-      fullPath: '/cow-feedlot-history/'
-      preLoaderRoute: typeof AuthCowFeedlotHistoryIndexRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/colors/': {
@@ -541,18 +481,15 @@ interface AuthRouteChildren {
   AuthCalfRecordsIndexRoute: typeof AuthCalfRecordsIndexRoute
   AuthCalfStatusesIndexRoute: typeof AuthCalfStatusesIndexRoute
   AuthColorsIndexRoute: typeof AuthColorsIndexRoute
-  AuthCowFeedlotHistoryIndexRoute: typeof AuthCowFeedlotHistoryIndexRoute
   AuthCowGendersIndexRoute: typeof AuthCowGendersIndexRoute
   AuthCowRolesIndexRoute: typeof AuthCowRolesIndexRoute
   AuthCowStatusesIndexRoute: typeof AuthCowStatusesIndexRoute
-  AuthCowTransponderHistoryIndexRoute: typeof AuthCowTransponderHistoryIndexRoute
   AuthCowsIndexRoute: typeof AuthCowsIndexRoute
   AuthFeedlotsIndexRoute: typeof AuthFeedlotsIndexRoute
   AuthInseminatorsIndexRoute: typeof AuthInseminatorsIndexRoute
   AuthPdStatusesIndexRoute: typeof AuthPdStatusesIndexRoute
   AuthPregnancyDiagnosisIndexRoute: typeof AuthPregnancyDiagnosisIndexRoute
   AuthSemenIndexRoute: typeof AuthSemenIndexRoute
-  AuthTransponderRecordsIndexRoute: typeof AuthTransponderRecordsIndexRoute
   AuthTranspondersIndexRoute: typeof AuthTranspondersIndexRoute
   AuthUsersIndexRoute: typeof AuthUsersIndexRoute
 }
@@ -564,18 +501,15 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthCalfRecordsIndexRoute: AuthCalfRecordsIndexRoute,
   AuthCalfStatusesIndexRoute: AuthCalfStatusesIndexRoute,
   AuthColorsIndexRoute: AuthColorsIndexRoute,
-  AuthCowFeedlotHistoryIndexRoute: AuthCowFeedlotHistoryIndexRoute,
   AuthCowGendersIndexRoute: AuthCowGendersIndexRoute,
   AuthCowRolesIndexRoute: AuthCowRolesIndexRoute,
   AuthCowStatusesIndexRoute: AuthCowStatusesIndexRoute,
-  AuthCowTransponderHistoryIndexRoute: AuthCowTransponderHistoryIndexRoute,
   AuthCowsIndexRoute: AuthCowsIndexRoute,
   AuthFeedlotsIndexRoute: AuthFeedlotsIndexRoute,
   AuthInseminatorsIndexRoute: AuthInseminatorsIndexRoute,
   AuthPdStatusesIndexRoute: AuthPdStatusesIndexRoute,
   AuthPregnancyDiagnosisIndexRoute: AuthPregnancyDiagnosisIndexRoute,
   AuthSemenIndexRoute: AuthSemenIndexRoute,
-  AuthTransponderRecordsIndexRoute: AuthTransponderRecordsIndexRoute,
   AuthTranspondersIndexRoute: AuthTranspondersIndexRoute,
   AuthUsersIndexRoute: AuthUsersIndexRoute,
 }

@@ -88,10 +88,22 @@ export const formApi = {
 
 export const feedlotApi = {
   getAll: () => api.get<ServerRes<Feedlot[]>>("/feedlot/all"),
+  toggleActive: (id: number) =>
+    api.put<ServerRes<Feedlot>>(`/feedlot/toggle-active/${id}`),
+  create: (data: LookupFormData) =>
+    api.post<ServerRes<Feedlot>>("/feedlot", data),
+  update: (id: number, data: LookupFormData) =>
+    api.put<ServerRes<Feedlot>>(`/feedlot/${id}`, data),
 };
 
 export const inseminatorApi = {
   getAll: () => api.get<ServerRes<Inseminator[]>>("/inseminator/all"),
+  toggleActive: (id: number) =>
+    api.put<ServerRes<Inseminator>>(`/inseminator/toggle-active/${id}`),
+  create: (data: LookupFormData) =>
+    api.post<ServerRes<Inseminator>>("/inseminator", data),
+  update: (id: number, data: LookupFormData) =>
+    api.put<ServerRes<Inseminator>>(`/inseminator/${id}`, data),
 };
 
 export const semenApi = {

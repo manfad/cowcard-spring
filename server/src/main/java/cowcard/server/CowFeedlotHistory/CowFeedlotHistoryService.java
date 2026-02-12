@@ -14,4 +14,12 @@ public class CowFeedlotHistoryService {
     public List<CowFeedlotHistory> findAll() {
         return cowFeedlotHistoryRepository.findAll();
     }
+
+    public List<CowFeedlotHistory> findByFeedlotId(Integer feedlotId) {
+        return cowFeedlotHistoryRepository.findByFeedlot_IdOrderByMovedInAtDesc(feedlotId);
+    }
+
+    public List<CowFeedlotHistory> findByCowId(Integer cowId) {
+        return cowFeedlotHistoryRepository.findByCow_IdOrderByMovedInAtDesc(cowId);
+    }
 }

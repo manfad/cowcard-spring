@@ -10,7 +10,6 @@ import {
   FileText,
   Baby,
   Activity,
-  History,
   Palette,
   Settings,
   ClipboardEdit,
@@ -48,7 +47,6 @@ const formNav = [
 const managementNav = [
   { title: "Feedlots", href: "/feedlots", icon: Warehouse },
   { title: "Semen", href: "/semen", icon: FlaskConical },
-  { title: "Inseminators", href: "/inseminators", icon: UserCheck },
   { title: "Transponders", href: "/transponders", icon: Radio },
 ];
 
@@ -60,20 +58,10 @@ const recordsNav = [
     href: "/pregnancy-diagnosis",
     icon: Activity,
   },
-  {
-    title: "Transponder Records",
-    href: "/transponder-records",
-    icon: FileText,
-  },
-  { title: "Feedlot History", href: "/cow-feedlot-history", icon: History },
-  {
-    title: "Transponder History",
-    href: "/cow-transponder-history",
-    icon: History,
-  },
 ];
 
 const configNav = [
+  { title: "Inseminators", href: "/inseminators", icon: UserCheck },
   { title: "Colors", href: "/colors", icon: Palette },
   { title: "Cow Genders", href: "/cow-genders", icon: Settings },
   { title: "Cow Roles", href: "/cow-roles", icon: Settings },
