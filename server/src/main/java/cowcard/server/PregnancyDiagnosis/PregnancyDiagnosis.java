@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 
 import cowcard.server.AiRecord.AiRecord;
 import cowcard.server.Common.BaseEntity;
@@ -40,7 +39,7 @@ public class PregnancyDiagnosis extends BaseEntity implements Serializable {
     private AiRecord aiRecord;
 
     @Column(name = "ai_date", nullable = false)
-    private LocalDate aiDate;
+    private String aiDate;
 
     @ManyToOne
     @JoinColumn(name = "diagnosis_by", referencedColumnName = "id")

@@ -13,6 +13,7 @@ import type {
   SemenFormData,
   Transponder,
   AiRecord,
+  AiRecordFormData,
   CalfRecord,
   TransponderRecord,
   CowFeedlotHistory,
@@ -143,6 +144,9 @@ export const transponderApi = {
 // Record entities
 export const aiRecordApi = {
   getAll: () => api.get<ServerRes<AiRecord[]>>("/ai-record/all"),
+  create: (data: AiRecordFormData) =>
+    api.post<ServerRes<AiRecord>>("/ai-record", data),
+  getNextCode: () => api.get<ServerRes<string>>("/ai-record/next-code"),
 };
 
 export const calfRecordApi = {

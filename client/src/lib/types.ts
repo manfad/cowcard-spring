@@ -24,16 +24,8 @@ export interface WhoAmI {
   admin: boolean;
 }
 
-// Base fields from BaseEntity
-export interface BaseEntity {
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string | null;
-  updatedBy: string | null;
-}
-
 // Lookup entities (all share: id, name, remark, active)
-export interface LookupEntity extends BaseEntity {
+export interface LookupEntity {
   id: number;
   name: string;
   remark: string | null;
@@ -71,21 +63,22 @@ export interface SemenFormData {
 }
 
 // Main entities
-export interface Feedlot extends BaseEntity {
+export interface Feedlot {
+  id: number;
+  name: string;
+  remark: string | null;
+  active: boolean | null;
+  cowCount: number;
+}
+
+export interface Inseminator {
   id: number;
   name: string;
   remark: string | null;
   active: boolean | null;
 }
 
-export interface Inseminator extends BaseEntity {
-  id: number;
-  name: string;
-  remark: string | null;
-  active: boolean | null;
-}
-
-export interface Semen extends BaseEntity {
+export interface Semen {
   id: number;
   name: string;
   sire: string | null;
@@ -95,7 +88,7 @@ export interface Semen extends BaseEntity {
   remark: string | null;
 }
 
-export interface Transponder extends BaseEntity {
+export interface Transponder {
   id: number;
   code: string;
   currentCow: {
@@ -107,7 +100,7 @@ export interface Transponder extends BaseEntity {
   remark: string | null;
 }
 
-export interface Cow extends BaseEntity {
+export interface Cow {
   id: number;
   tag: string;
   dob: string | null;
@@ -137,7 +130,7 @@ export interface CowView {
 }
 
 // Record entities
-export interface AiRecord extends BaseEntity {
+export interface AiRecord {
   id: number;
   code: string | null;
   date: string | null;
@@ -146,20 +139,20 @@ export interface AiRecord extends BaseEntity {
   remark: string | null;
   dam: { id: number; tag: string } | null;
   semen: { id: number; name: string } | null;
-  feedlot: { id: number; name: string } | null;
+  feedlot: string | null;
   aiBy: { id: number; name: string } | null;
   preparedBy: { id: number; name: string } | null;
   status: { id: number; name: string } | null;
 }
 
-export interface CalfRecord extends BaseEntity {
+export interface CalfRecord {
   id: number;
   cow: { id: number; tag: string } | null;
   aiRecord: { id: number; code: string } | null;
   pregnancyDiagnosis: { id: number } | null;
 }
 
-export interface TransponderRecord extends BaseEntity {
+export interface TransponderRecord {
   id: number;
   assignedDate: string;
   leaveDate: string | null;
@@ -168,7 +161,7 @@ export interface TransponderRecord extends BaseEntity {
   feedlot: { id: number; name: string } | null;
 }
 
-export interface CowFeedlotHistory extends BaseEntity {
+export interface CowFeedlotHistory {
   id: number;
   movedInAt: string;
   movedOutAt: string | null;
@@ -176,7 +169,7 @@ export interface CowFeedlotHistory extends BaseEntity {
   feedlot: { id: number; name: string } | null;
 }
 
-export interface CowTransponderHistory extends BaseEntity {
+export interface CowTransponderHistory {
   id: number;
   assignedAt: string;
   unassignedAt: string | null;
@@ -184,7 +177,7 @@ export interface CowTransponderHistory extends BaseEntity {
   transponder: { id: number; code: string } | null;
 }
 
-export interface PregnancyDiagnosis extends BaseEntity {
+export interface PregnancyDiagnosis {
   id: number;
   aiDate: string;
   aiRecord: { id: number; code: string } | null;
@@ -200,14 +193,25 @@ export interface FeedlotWithCows {
   cows: CowView[];
 }
 
+export interface AiRecordFormData {
+  damId: number;
+  semenId: number;
+  aiDate: string;
+  aiTime: string;
+  aiById: number;
+  preparedById: number;
+  remark: string;
+}
+
 // Form types
 export interface DamOption {
   id: number;
   tag: string;
+  currentFeedlot: { id: number; name: string } | null;
 }
 
 // User
-export interface User extends BaseEntity {
+export interface User {
   id: string;
   name: string;
   email: string;

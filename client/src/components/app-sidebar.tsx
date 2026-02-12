@@ -43,10 +43,10 @@ const formNav = [
   { title: "Dam Form", href: "/dam-form", icon: ClipboardEdit },
   { title: "Cow Form", href: "/cow-form", icon: ClipboardPlus },
   { title: "Calf Form", href: "/calf-form", icon: Baby },
+  { title: "AI Record Form", href: "/ai-record-form", icon: FileText },
 ];
 
 const managementNav = [
-  { title: "Feedlots", href: "/feedlots", icon: Warehouse },
   { title: "Feedlot Management", href: "/feedlot-management", icon: Building2 },
   { title: "Semen", href: "/semen", icon: FlaskConical },
   { title: "Transponders", href: "/transponders", icon: Radio },
@@ -62,7 +62,8 @@ const recordsNav = [
   },
 ];
 
-const configNav = [
+const libraryNav = [
+  { title: "Feedlots", href: "/feedlots", icon: Warehouse },
   { title: "Inseminators", href: "/inseminators", icon: UserCheck },
   { title: "Colors", href: "/colors", icon: Palette },
   { title: "Cow Genders", href: "/cow-genders", icon: Settings },
@@ -161,8 +162,8 @@ export function AppSidebar() {
         />
         {user?.admin && (
           <NavGroup
-            label="Data Management"
-            items={configNav}
+            label="Library"
+            items={libraryNav}
             pathname={location.pathname}
           />
         )}

@@ -36,6 +36,18 @@ public class FeedlotService {
         return feedlotRepository.findByActiveTrue();
     }
 
+    public List<FeedlotDto> findAllDto() {
+        return feedlotRepository.findAll().stream()
+                .map(f -> FeedlotDto.from(f, cowRepository.countByCurrentFeedlotId(f.getId())))
+                .toList();
+    }
+
+    public List<FeedlotDto> findAllActiveDto() {
+        return feedlotRepository.findByActiveTrue().stream()
+                .map(f -> FeedlotDto.from(f, cowRepository.countByCurrentFeedlotId(f.getId())))
+                .toList();
+    }
+
     public Feedlot toggleActive(Integer id) {
         Feedlot e = feedlotRepository.findById(id).orElseThrow();
         e.setActive(e.getActive() == null || !e.getActive());

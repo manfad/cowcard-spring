@@ -173,9 +173,14 @@ public class FormController {
             String remark
     ) {}
 
-    public record DamOption(Integer id, String tag) {
+    public record FeedlotOption(Integer id, String name) {}
+
+    public record DamOption(Integer id, String tag, FeedlotOption currentFeedlot) {
         public static DamOption from(Cow cow) {
-            return new DamOption(cow.getId(), cow.getTag());
+            FeedlotOption feedlot = cow.getCurrentFeedlot() != null
+                    ? new FeedlotOption(cow.getCurrentFeedlot().getId(), cow.getCurrentFeedlot().getName())
+                    : null;
+            return new DamOption(cow.getId(), cow.getTag(), feedlot);
         }
     }
 }

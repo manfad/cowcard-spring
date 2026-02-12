@@ -11,5 +11,7 @@ public interface CowRepository extends JpaRepository<Cow, Integer> {
     List<Cow> findByActiveTrue();
 
     List<Cow> findByRole_NameIgnoreCaseAndActiveTrue(String roleName);
+
+    long countByCurrentFeedlotId(Integer feedlotId);
 }
 

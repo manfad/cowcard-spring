@@ -35,4 +35,13 @@ public class SemenService {
         e.setBull(e.getBull() == null || !e.getBull());
         return semenRepository.save(e);
     }
+
+    public void deductStraw(Integer semenId) {
+        Semen semen = semenRepository.findById(semenId).orElseThrow();
+        if (semen.getStraw() == null || semen.getStraw() <= 0) {
+            throw new RuntimeException("No straws remaining for semen ID: " + semenId);
+        }
+        semen.setStraw(semen.getStraw() - 1);
+        semenRepository.save(semen);
+    }
 }

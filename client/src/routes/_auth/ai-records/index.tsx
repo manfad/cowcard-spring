@@ -77,7 +77,7 @@ function AiRecordsPage() {
     }),
     columnHelper.accessor("feedlot", {
       header: "Feedlot",
-      cell: (info) => info.getValue()?.name ?? "-",
+      cell: (info) => info.getValue() ?? "-",
     }),
     columnHelper.accessor("aiBy", {
       header: "AI By",
@@ -125,7 +125,9 @@ function AiRecordsPage() {
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="w-60"
             />
-            <Button>Add New</Button>
+            <Button asChild>
+              <a href="/ai-record-form" target="_blank" rel="noopener noreferrer">Add New</a>
+            </Button>
           </CardAction>
         </CardHeader>
         <CardContent>

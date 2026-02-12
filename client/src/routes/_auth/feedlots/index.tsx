@@ -106,6 +106,7 @@ function FeedlotsPage() {
       cell: ({ row }) => row.index + 1,
     }),
     columnHelper.accessor("name", { header: "Name" }),
+    columnHelper.accessor("cowCount", { header: "Cow Count" }),
     columnHelper.accessor("remark", {
       header: "Remark",
       cell: (info) => info.getValue() ?? "-",

@@ -23,12 +23,12 @@ public class FeedlotController {
     private FeedlotService feedlotService;
 
     @GetMapping("/all")
-    public ServerRes<List<Feedlot>> getAll() {
+    public ServerRes<List<FeedlotDto>> getAll() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof UserDetail ud && ud.isAdmin()) {
-            return ServerRes.success(feedlotService.findAll());
+            return ServerRes.success(feedlotService.findAllDto());
         }
-        return ServerRes.success(feedlotService.findAllActive());
+        return ServerRes.success(feedlotService.findAllActiveDto());
     }
 
     @PutMapping("/toggle-active/{id}")

@@ -14,13 +14,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 import cowcard.server.AiStatus.AiStatus;
 import cowcard.server.Common.BaseEntity;
 import cowcard.server.Cow.Cow;
-import cowcard.server.Feedlot.Feedlot;
 import cowcard.server.Inseminator.Inseminator;
 import cowcard.server.Semen.Semen;
 
@@ -49,9 +46,8 @@ public class AiRecord extends BaseEntity implements Serializable {
     @JoinColumn(name = "semen_id", referencedColumnName = "id", nullable = false)
     private Semen semen;
 
-    @ManyToOne
-    @JoinColumn(name = "feedlot_id", referencedColumnName = "id")
-    private Feedlot feedlot;
+    @Column(name = "feedlot")
+    private String feedlot;
 
     @ManyToOne
     @JoinColumn(name = "ai_by", referencedColumnName = "id")
@@ -66,13 +62,13 @@ public class AiRecord extends BaseEntity implements Serializable {
     private AiStatus status;
 
     @Column(name = "date")
-    private LocalDate date;
+    private String date;
 
     @Column(name = "ai_date")
-    private LocalDate aiDate;
+    private String aiDate;
 
     @Column(name = "ai_time")
-    private LocalTime aiTime;
+    private String aiTime;
 
     @Column(name = "remark")
     private String remark;

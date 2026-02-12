@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AiRecordRepository extends JpaRepository<AiRecord, Integer> {
+    long countByCodeStartingWith(String prefix);
 }

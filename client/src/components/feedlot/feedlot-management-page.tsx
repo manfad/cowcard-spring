@@ -97,8 +97,7 @@ export function FeedlotManagementPage() {
 
   // Assign bulk mutation
   const assignBulkMutation = useMutation({
-    mutationFn: (cowIds: number[]) =>
-      feedlotApi.assignBulk(feedlotId!, cowIds),
+    mutationFn: (cowIds: number[]) => feedlotApi.assignBulk(feedlotId!, cowIds),
     onError: () => toast.error("Failed to assign cows"),
   });
 
@@ -128,7 +127,7 @@ export function FeedlotManagementPage() {
         // Individual mutation error toasts already handle this
       }
     },
-    [assignBulkMutation, unassignMutation, invalidateAll]
+    [assignBulkMutation, unassignMutation, invalidateAll],
   );
 
   const handleUnassign = useCallback(
@@ -140,11 +139,10 @@ export function FeedlotManagementPage() {
         },
       });
     },
-    [unassignMutation, invalidateAll]
+    [unassignMutation, invalidateAll],
   );
 
-  const isPending =
-    assignBulkMutation.isPending || unassignMutation.isPending;
+  const isPending = assignBulkMutation.isPending || unassignMutation.isPending;
 
   // Columns defined with useMemo - only recreated when isPending changes
   const columns = useMemo(
@@ -156,9 +154,7 @@ export function FeedlotManagementPage() {
       }),
       columnHelper.accessor("tag", {
         header: "Tag",
-        cell: (info) => (
-          <span className="font-medium">{info.getValue()}</span>
-        ),
+        cell: (info) => <span className="font-medium">{info.getValue()}</span>,
       }),
       columnHelper.accessor("gender", {
         header: "Gender",
@@ -205,7 +201,7 @@ export function FeedlotManagementPage() {
         ),
       }),
     ],
-    [handleUnassign, isPending]
+    [handleUnassign, isPending],
   );
 
   const table = useReactTable({
@@ -249,7 +245,7 @@ export function FeedlotManagementPage() {
               ) : (
                 feedlots.map((feedlot: Feedlot) => (
                   <SelectItem key={feedlot.id} value={String(feedlot.id)}>
-                    {feedlot.name}
+                    {feedlot.name} - {feedlot.remark}
                   </SelectItem>
                 ))
               )}
@@ -304,7 +300,7 @@ export function FeedlotManagementPage() {
                                 ? null
                                 : flexRender(
                                     h.column.columnDef.header,
-                                    h.getContext()
+                                    h.getContext(),
                                   )}
                             </TableHead>
                           ))}
@@ -319,7 +315,7 @@ export function FeedlotManagementPage() {
                               <TableCell key={cell.id}>
                                 {flexRender(
                                   cell.column.columnDef.cell,
-                                  cell.getContext()
+                                  cell.getContext(),
                                 )}
                               </TableCell>
                             ))}
