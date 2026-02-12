@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import cowcard.server.Common.BaseEntity;
 import cowcard.server.Cow.Cow;
-import cowcard.server.Feedlot.Feedlot;
 
 @Getter
 @Setter
@@ -43,10 +42,6 @@ public class Transponder extends BaseEntity implements Serializable {
     @JoinColumn(name = "current_cow", referencedColumnName = "id")
     @JsonIgnoreProperties("currentTransponder")
     private Cow currentCow;
-
-    @ManyToOne
-    @JoinColumn(name = "current_feedlot", referencedColumnName = "id")
-    private Feedlot currentFeedlot;
 
     @Column(name = "assigned_date")
     private LocalDate assignedDate;

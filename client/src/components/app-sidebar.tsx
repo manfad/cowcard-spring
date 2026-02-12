@@ -4,6 +4,7 @@ import {
   LogOut,
   Tag,
   Warehouse,
+  Building2,
   FlaskConical,
   UserCheck,
   Radio,
@@ -46,6 +47,7 @@ const formNav = [
 
 const managementNav = [
   { title: "Feedlots", href: "/feedlots", icon: Warehouse },
+  { title: "Feedlot Management", href: "/feedlot-management", icon: Building2 },
   { title: "Semen", href: "/semen", icon: FlaskConical },
   { title: "Transponders", href: "/transponders", icon: Radio },
 ];

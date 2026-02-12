@@ -3,6 +3,7 @@ package cowcard.server.Feedlot;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import cowcard.server.Common.ServerRes;
 import cowcard.server.Cow.Cow;
 import cowcard.server.Cow.CowRepository;
+import cowcard.server.Cow.CowView;
 import cowcard.server.CowFeedlotHistory.CowFeedlotHistory;
 import cowcard.server.CowFeedlotHistory.CowFeedlotHistoryRepository;
 
@@ -119,5 +121,108 @@ public class FeedlotService {
         cowRepository.save(cow);
 
         return ServerRes.success(feedlot, "Cow removed from feedlot successfully");
+    }
+
+    public ServerRes<FeedlotWithCows> getWithCows(Integer feedlotId) {
+        Feedlot feedlot = feedlotRepository.findById(feedlotId).orElse(null);
+        if (feedlot == null) {
+            return ServerRes.<FeedlotWithCows>error("Feedlot with id " + feedlotId + " not found");
+        }
+
+        // Single query with JOIN FETCH to avoid N+1
+        List<CowFeedlotHistory> activeHistories = cowFeedlotHistoryRepository
+                .findActiveByFeedlotWithCowDetails(feedlotId);
+
+        List<CowView> cows = activeHistories.stream()
+                .map(h -> CowView.from(h.getCow()))
+                .collect(Collectors.toList());
+
+        return ServerRes.success(FeedlotWithCows.from(feedlot, cows));
+    }
+
+    @Transactional
+    public ServerRes<FeedlotWithCows> assignBulk(Integer feedlotId, List<Integer> cowIds) {
+        Feedlot feedlot = feedlotRepository.findById(feedlotId).orElse(null);
+        if (feedlot == null) {
+            return ServerRes.<FeedlotWithCows>error("Feedlot with id " + feedlotId + " not found");
+        }
+
+        List<Cow> cows = cowRepository.findAllById(cowIds);
+        if (cows.isEmpty()) {
+            return ServerRes.<FeedlotWithCows>error("No valid cows found for the given IDs");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        // Fetch all active feedlot history records for these cows in one query
+        List<CowFeedlotHistory> activeHistories = cowFeedlotHistoryRepository
+                .findByCowInAndMovedOutAtIsNull(cows);
+
+        for (Cow cow : cows) {
+            // Find existing active history for this cow (if any)
+            Optional<CowFeedlotHistory> existingActive = activeHistories.stream()
+                    .filter(h -> h.getCow().getId().equals(cow.getId()))
+                    .findFirst();
+
+            if (existingActive.isPresent()) {
+                CowFeedlotHistory activeHistory = existingActive.get();
+
+                // If already in this feedlot, skip
+                if (activeHistory.getFeedlot().getId().equals(feedlotId)) {
+                    continue;
+                }
+
+                // Close the old history record
+                activeHistory.setMovedOutAt(now);
+                cowFeedlotHistoryRepository.save(activeHistory);
+            }
+
+            // Create new history record
+            CowFeedlotHistory history = new CowFeedlotHistory();
+            history.setCow(cow);
+            history.setFeedlot(feedlot);
+            history.setMovedInAt(now);
+            cowFeedlotHistoryRepository.save(history);
+
+            // Update cow's current feedlot reference
+            cow.setCurrentFeedlot(feedlot);
+            cowRepository.save(cow);
+        }
+
+        // Return updated feedlot with cows
+        List<CowFeedlotHistory> updatedHistories = cowFeedlotHistoryRepository
+                .findByFeedlotAndMovedOutAtIsNull(feedlot);
+
+        List<CowView> cowViews = updatedHistories.stream()
+                .map(h -> CowView.from(h.getCow()))
+                .collect(Collectors.toList());
+
+        return ServerRes.success(FeedlotWithCows.from(feedlot, cowViews),
+                "Cows assigned to feedlot successfully");
+    }
+
+    @Transactional
+    public ServerRes<Void> unassignBulk(List<Integer> cowIds) {
+        List<Cow> cows = cowRepository.findAllById(cowIds);
+        if (cows.isEmpty()) {
+            return ServerRes.<Void>error("No valid cows found for the given IDs");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        List<CowFeedlotHistory> activeHistories = cowFeedlotHistoryRepository
+                .findByCowInAndMovedOutAtIsNull(cows);
+
+        for (CowFeedlotHistory history : activeHistories) {
+            history.setMovedOutAt(now);
+            cowFeedlotHistoryRepository.save(history);
+
+            // Clear the cow's current feedlot reference
+            Cow cow = history.getCow();
+            cow.setCurrentFeedlot(null);
+            cowRepository.save(cow);
+        }
+
+        return ServerRes.success(null, "Cows unassigned from feedlot successfully");
     }
 }

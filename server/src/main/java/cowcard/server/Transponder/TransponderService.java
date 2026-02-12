@@ -35,6 +35,17 @@ public class TransponderService {
         return transponderRepository.findByCurrentCowIsNull();
     }
 
+    public Transponder create(Transponder transponder) {
+        return transponderRepository.save(transponder);
+    }
+
+    public Transponder update(Integer id, Transponder transponder) {
+        Transponder e = transponderRepository.findById(id).orElseThrow();
+        e.setCode(transponder.getCode());
+        e.setRemark(transponder.getRemark());
+        return transponderRepository.save(e);
+    }
+
     @Transactional
     public ServerRes<Transponder> assign(Integer transponderId, Integer cowId) {
         Transponder transponder = transponderRepository.findById(transponderId).orElse(null);

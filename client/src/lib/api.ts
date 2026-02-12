@@ -7,6 +7,7 @@ import type {
   Cow,
   CowView,
   Feedlot,
+  FeedlotWithCows,
   Inseminator,
   Semen,
   SemenFormData,
@@ -88,6 +89,15 @@ export const formApi = {
 
 export const feedlotApi = {
   getAll: () => api.get<ServerRes<Feedlot[]>>("/feedlot/all"),
+  getWithCows: (id: number) =>
+    api.get<ServerRes<FeedlotWithCows>>(`/feedlot/${id}/with-cows`),
+  assignBulk: (feedlotId: number, cowIds: number[]) =>
+    api.put<ServerRes<FeedlotWithCows>>(
+      `/feedlot/assign-bulk/${feedlotId}`,
+      cowIds
+    ),
+  unassignBulk: (cowIds: number[]) =>
+    api.put<ServerRes<string>>("/feedlot/unassign-bulk", cowIds),
   toggleActive: (id: number) =>
     api.put<ServerRes<Feedlot>>(`/feedlot/toggle-active/${id}`),
   create: (data: LookupFormData) =>
@@ -118,6 +128,16 @@ export const semenApi = {
 
 export const transponderApi = {
   getAll: () => api.get<ServerRes<Transponder[]>>("/transponder/all"),
+  create: (data: { code: string; remark: string }) =>
+    api.post<ServerRes<Transponder>>("/transponder", data),
+  update: (id: number, data: { code: string; remark: string }) =>
+    api.put<ServerRes<Transponder>>(`/transponder/${id}`, data),
+  assign: (transponderId: number, cowId: number) =>
+    api.put<ServerRes<Transponder>>(
+      `/transponder/assign/${transponderId}/${cowId}`
+    ),
+  unassign: (transponderId: number) =>
+    api.put<ServerRes<Transponder>>(`/transponder/unassign/${transponderId}`),
 };
 
 // Record entities

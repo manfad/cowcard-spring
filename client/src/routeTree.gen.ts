@@ -23,6 +23,7 @@ import { Route as AuthPregnancyDiagnosisIndexRouteImport } from './routes/_auth/
 import { Route as AuthPdStatusesIndexRouteImport } from './routes/_auth/pd-statuses/index'
 import { Route as AuthInseminatorsIndexRouteImport } from './routes/_auth/inseminators/index'
 import { Route as AuthFeedlotsIndexRouteImport } from './routes/_auth/feedlots/index'
+import { Route as AuthFeedlotManagementIndexRouteImport } from './routes/_auth/feedlot-management/index'
 import { Route as AuthCowsIndexRouteImport } from './routes/_auth/cows/index'
 import { Route as AuthCowStatusesIndexRouteImport } from './routes/_auth/cow-statuses/index'
 import { Route as AuthCowRolesIndexRouteImport } from './routes/_auth/cow-roles/index'
@@ -103,6 +104,12 @@ const AuthFeedlotsIndexRoute = AuthFeedlotsIndexRouteImport.update({
   path: '/feedlots/',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthFeedlotManagementIndexRoute =
+  AuthFeedlotManagementIndexRouteImport.update({
+    id: '/feedlot-management/',
+    path: '/feedlot-management/',
+    getParentRoute: () => AuthRoute,
+  } as any)
 const AuthCowsIndexRoute = AuthCowsIndexRouteImport.update({
   id: '/cows/',
   path: '/cows/',
@@ -165,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/cow-roles/': typeof AuthCowRolesIndexRoute
   '/cow-statuses/': typeof AuthCowStatusesIndexRoute
   '/cows/': typeof AuthCowsIndexRoute
+  '/feedlot-management/': typeof AuthFeedlotManagementIndexRoute
   '/feedlots/': typeof AuthFeedlotsIndexRoute
   '/inseminators/': typeof AuthInseminatorsIndexRoute
   '/pd-statuses/': typeof AuthPdStatusesIndexRoute
@@ -189,6 +197,7 @@ export interface FileRoutesByTo {
   '/cow-roles': typeof AuthCowRolesIndexRoute
   '/cow-statuses': typeof AuthCowStatusesIndexRoute
   '/cows': typeof AuthCowsIndexRoute
+  '/feedlot-management': typeof AuthFeedlotManagementIndexRoute
   '/feedlots': typeof AuthFeedlotsIndexRoute
   '/inseminators': typeof AuthInseminatorsIndexRoute
   '/pd-statuses': typeof AuthPdStatusesIndexRoute
@@ -215,6 +224,7 @@ export interface FileRoutesById {
   '/_auth/cow-roles/': typeof AuthCowRolesIndexRoute
   '/_auth/cow-statuses/': typeof AuthCowStatusesIndexRoute
   '/_auth/cows/': typeof AuthCowsIndexRoute
+  '/_auth/feedlot-management/': typeof AuthFeedlotManagementIndexRoute
   '/_auth/feedlots/': typeof AuthFeedlotsIndexRoute
   '/_auth/inseminators/': typeof AuthInseminatorsIndexRoute
   '/_auth/pd-statuses/': typeof AuthPdStatusesIndexRoute
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/cow-roles/'
     | '/cow-statuses/'
     | '/cows/'
+    | '/feedlot-management/'
     | '/feedlots/'
     | '/inseminators/'
     | '/pd-statuses/'
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/cow-roles'
     | '/cow-statuses'
     | '/cows'
+    | '/feedlot-management'
     | '/feedlots'
     | '/inseminators'
     | '/pd-statuses'
@@ -290,6 +302,7 @@ export interface FileRouteTypes {
     | '/_auth/cow-roles/'
     | '/_auth/cow-statuses/'
     | '/_auth/cows/'
+    | '/_auth/feedlot-management/'
     | '/_auth/feedlots/'
     | '/_auth/inseminators/'
     | '/_auth/pd-statuses/'
@@ -408,6 +421,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthFeedlotsIndexRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/feedlot-management/': {
+      id: '/_auth/feedlot-management/'
+      path: '/feedlot-management'
+      fullPath: '/feedlot-management/'
+      preLoaderRoute: typeof AuthFeedlotManagementIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/cows/': {
       id: '/_auth/cows/'
       path: '/cows'
@@ -485,6 +505,7 @@ interface AuthRouteChildren {
   AuthCowRolesIndexRoute: typeof AuthCowRolesIndexRoute
   AuthCowStatusesIndexRoute: typeof AuthCowStatusesIndexRoute
   AuthCowsIndexRoute: typeof AuthCowsIndexRoute
+  AuthFeedlotManagementIndexRoute: typeof AuthFeedlotManagementIndexRoute
   AuthFeedlotsIndexRoute: typeof AuthFeedlotsIndexRoute
   AuthInseminatorsIndexRoute: typeof AuthInseminatorsIndexRoute
   AuthPdStatusesIndexRoute: typeof AuthPdStatusesIndexRoute
@@ -505,6 +526,7 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthCowRolesIndexRoute: AuthCowRolesIndexRoute,
   AuthCowStatusesIndexRoute: AuthCowStatusesIndexRoute,
   AuthCowsIndexRoute: AuthCowsIndexRoute,
+  AuthFeedlotManagementIndexRoute: AuthFeedlotManagementIndexRoute,
   AuthFeedlotsIndexRoute: AuthFeedlotsIndexRoute,
   AuthInseminatorsIndexRoute: AuthInseminatorsIndexRoute,
   AuthPdStatusesIndexRoute: AuthPdStatusesIndexRoute,

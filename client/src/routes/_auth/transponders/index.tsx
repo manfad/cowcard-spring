@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod/v4";
 import {
   useReactTable,
   getCoreRowModel,
@@ -9,8 +12,11 @@ import {
   flexRender,
   createColumnHelper,
 } from "@tanstack/react-table";
+import { Pencil, X, Link } from "lucide-react";
+import { format } from "date-fns";
+import { toast } from "sonner";
 import { transponderApi } from "@/lib/api";
-import type { Transponder } from "@/lib/types";
+import type { Transponder, CowView } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,15 +34,84 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Badge } from "@/components/ui/badge";
+import { CowSelectDialog } from "@/components/transponder/cow-select-dialog";
 
 export const Route = createFileRoute("/_auth/transponders/")({
   component: TranspondersPage,
 });
 
+const transponderSchema = z.object({
+  code: z.string().min(1, "Code is required"),
+  remark: z.string(),
+});
+
+type TransponderFormValues = z.infer<typeof transponderSchema>;
+
 const columnHelper = createColumnHelper<Transponder>();
+
+// Static columns that don't depend on component state
+const staticColumns = [
+  columnHelper.display({
+    id: "index",
+    header: "#",
+    cell: ({ row }) => row.index + 1,
+  }),
+  columnHelper.accessor("code", { header: "Code" }),
+  columnHelper.accessor("assignedDate", {
+    header: "Assigned Date",
+    cell: (info) => {
+      const val = info.getValue();
+      return val ? format(new Date(val), "dd/MM/yyyy") : "-";
+    },
+  }),
+  columnHelper.display({
+    id: "feedlot",
+    header: "Feedlot",
+    cell: (info) => {
+      const feedlot = info.row.original.currentCow?.currentFeedlot;
+      if (!feedlot) return "-";
+      return feedlot.name;
+    },
+  }),
+  columnHelper.accessor("remark", {
+    header: "Remark",
+    cell: (info) => info.getValue() ?? "-",
+  }),
+];
 
 function TranspondersPage() {
   const [globalFilter, setGlobalFilter] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingEntity, setEditingEntity] = useState<Transponder | null>(null);
+  const [cowSelectOpen, setCowSelectOpen] = useState(false);
+  const [assigningTransponderId, setAssigningTransponderId] = useState<
+    number | null
+  >(null);
+  const [cowSelectSource, setCowSelectSource] = useState<"table" | "dialog">(
+    "table"
+  );
+  const [selectedCow, setSelectedCow] = useState<{
+    id: number;
+    tag: string;
+  } | null>(null);
+  const qc = useQueryClient();
 
   const { data: transponders = [], isLoading } = useQuery({
     queryKey: ["transponders"],
@@ -46,33 +121,203 @@ function TranspondersPage() {
     },
   });
 
-  const columns = [
-    columnHelper.display({
-      id: "index",
-      header: "#",
-      cell: ({ row }) => row.index + 1,
-    }),
-    columnHelper.accessor("code", { header: "Code" }),
-    columnHelper.accessor("currentCow", {
-      header: "Current Cow",
-      cell: (info) => info.getValue() ?? "-",
-    }),
-    columnHelper.accessor("assignedDate", {
-      header: "Assigned Date",
-      cell: (info) =>
-        info.getValue()
-          ? new Date(info.getValue()!).toLocaleDateString()
-          : "-",
-    }),
-    columnHelper.accessor("currentFeedlot", {
-      header: "Feedlot",
-      cell: (info) => info.getValue()?.name ?? "-",
-    }),
-    columnHelper.accessor("remark", {
-      header: "Remark",
-      cell: (info) => info.getValue() ?? "-",
-    }),
-  ];
+  const invalidateAll = useCallback(() => {
+    qc.invalidateQueries({ queryKey: ["transponders"] });
+    qc.invalidateQueries({ queryKey: ["cows"] });
+    qc.invalidateQueries({ queryKey: ["feedlot-with-cows"] });
+  }, [qc]);
+
+  const createMutation = useMutation({
+    mutationFn: (data: { code: string; remark: string }) =>
+      transponderApi.create(data),
+    onError: () => toast.error("Failed to create transponder"),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (vars: {
+      id: number;
+      data: { code: string; remark: string };
+    }) => transponderApi.update(vars.id, vars.data),
+    onError: () => toast.error("Failed to update transponder"),
+  });
+
+  const assignMutation = useMutation({
+    mutationFn: (vars: { transponderId: number; cowId: number }) =>
+      transponderApi.assign(vars.transponderId, vars.cowId),
+    onError: () => toast.error("Failed to assign cow"),
+  });
+
+  const unassignMutation = useMutation({
+    mutationFn: (transponderId: number) =>
+      transponderApi.unassign(transponderId),
+    onError: () => toast.error("Failed to unassign cow"),
+  });
+
+  const form = useForm<TransponderFormValues>({
+    resolver: zodResolver(transponderSchema),
+    defaultValues: { code: "", remark: "" },
+  });
+
+  useEffect(() => {
+    if (dialogOpen) {
+      form.reset({
+        code: editingEntity?.code ?? "",
+        remark: editingEntity?.remark ?? "",
+      });
+      setSelectedCow(editingEntity?.currentCow ?? null);
+    }
+  }, [dialogOpen, editingEntity, form]);
+
+  const handleAdd = useCallback(() => {
+    setEditingEntity(null);
+    setDialogOpen(true);
+  }, []);
+
+  const handleEdit = useCallback((entity: Transponder) => {
+    setEditingEntity(entity);
+    setDialogOpen(true);
+  }, []);
+
+  const handleFormSubmit = async (data: TransponderFormValues) => {
+    try {
+      if (editingEntity) {
+        await updateMutation.mutateAsync({ id: editingEntity.id, data });
+        const hadCow = editingEntity.currentCow;
+        const wantsCow = selectedCow;
+
+        if (hadCow && !wantsCow) {
+          await unassignMutation.mutateAsync(editingEntity.id);
+        } else if (wantsCow && (!hadCow || hadCow.id !== wantsCow.id)) {
+          if (hadCow) {
+            await unassignMutation.mutateAsync(editingEntity.id);
+          }
+          await assignMutation.mutateAsync({
+            transponderId: editingEntity.id,
+            cowId: wantsCow.id,
+          });
+        }
+        toast.success("Transponder updated");
+      } else {
+        const res = await createMutation.mutateAsync(data);
+        const created = res.data.data;
+        if (created && selectedCow) {
+          await assignMutation.mutateAsync({
+            transponderId: created.id,
+            cowId: selectedCow.id,
+          });
+        }
+        toast.success("Transponder created");
+      }
+      // Single invalidation after all operations complete
+      invalidateAll();
+      setDialogOpen(false);
+    } catch {
+      // Individual mutation error toasts handle this
+    }
+  };
+
+  const handleAssignClick = useCallback((transponderId: number) => {
+    setAssigningTransponderId(transponderId);
+    setCowSelectSource("table");
+    setCowSelectOpen(true);
+  }, []);
+
+  const handleCowSelected = useCallback(
+    (cow: CowView) => {
+      if (cowSelectSource === "dialog") {
+        setSelectedCow({ id: cow.id, tag: cow.tag });
+      } else {
+        if (assigningTransponderId !== null) {
+          assignMutation.mutate(
+            { transponderId: assigningTransponderId, cowId: cow.id },
+            {
+              onSuccess: () => {
+                invalidateAll();
+                toast.success("Cow assigned to transponder");
+              },
+            }
+          );
+        }
+        setAssigningTransponderId(null);
+      }
+    },
+    [cowSelectSource, assigningTransponderId, assignMutation, invalidateAll]
+  );
+
+  const handleUnassign = useCallback(
+    (transponderId: number) => {
+      unassignMutation.mutate(transponderId, {
+        onSuccess: () => {
+          invalidateAll();
+          toast.success("Cow unassigned from transponder");
+        },
+      });
+    },
+    [unassignMutation, invalidateAll]
+  );
+
+  const anyPending =
+    assignMutation.isPending || unassignMutation.isPending;
+
+  // Dynamic columns that depend on handlers - memoized
+  const columns = useMemo(
+    () => [
+      staticColumns[0], // #
+      staticColumns[1], // Code
+      columnHelper.accessor("currentCow", {
+        header: "Current Cow",
+        cell: (info) => {
+          const cow = info.getValue();
+          const transponderId = info.row.original.id;
+          if (cow) {
+            return (
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">{cow.tag}</Badge>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => handleUnassign(transponderId)}
+                  disabled={anyPending}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            );
+          }
+          return (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleAssignClick(transponderId)}
+              disabled={anyPending}
+            >
+              <Link className="mr-1 h-3 w-3" />
+              Assign
+            </Button>
+          );
+        },
+      }),
+      staticColumns[2], // Assigned Date
+      staticColumns[3], // Feedlot
+      staticColumns[4], // Remark
+      columnHelper.display({
+        id: "actions",
+        header: "Actions",
+        cell: (info) => (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => handleEdit(info.row.original)}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        ),
+      }),
+    ],
+    [handleUnassign, handleAssignClick, handleEdit, anyPending]
+  );
 
   const table = useReactTable({
     data: transponders,
@@ -86,6 +331,9 @@ function TranspondersPage() {
   });
 
   if (isLoading) return <div className="p-4">Loading...</div>;
+
+  const isEdit = editingEntity !== null;
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
     <div className="space-y-6">
@@ -104,7 +352,7 @@ function TranspondersPage() {
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="w-60"
             />
-            <Button>Add New</Button>
+            <Button onClick={handleAdd}>Add New</Button>
           </CardAction>
         </CardHeader>
         <CardContent>
@@ -119,7 +367,7 @@ function TranspondersPage() {
                           ? null
                           : flexRender(
                               h.column.columnDef.header,
-                              h.getContext(),
+                              h.getContext()
                             )}
                       </TableHead>
                     ))}
@@ -134,7 +382,7 @@ function TranspondersPage() {
                         <TableCell key={cell.id}>
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext(),
+                            cell.getContext()
                           )}
                         </TableCell>
                       ))}
@@ -178,6 +426,104 @@ function TranspondersPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {isEdit ? "Edit Transponder" : "Add New Transponder"}
+            </DialogTitle>
+            <DialogDescription>
+              {isEdit
+                ? "Update the transponder details below."
+                : "Fill in the details to create a new transponder."}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleFormSubmit)}
+              className="space-y-4"
+            >
+              <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Code</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter transponder code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="remark"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Remark</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter remark (optional)" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormItem>
+                <FormLabel>Assigned Cow</FormLabel>
+                <div>
+                  {selectedCow ? (
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">{selectedCow.tag}</Badge>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => setSelectedCow(null)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setCowSelectSource("dialog");
+                        setCowSelectOpen(true);
+                      }}
+                    >
+                      <Link className="mr-1 h-3 w-3" />
+                      Assign Cow
+                    </Button>
+                  )}
+                </div>
+              </FormItem>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? "Saving..." : isEdit ? "Update" : "Create"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <CowSelectDialog
+        open={cowSelectOpen}
+        onOpenChange={setCowSelectOpen}
+        onSelect={handleCowSelected}
+      />
     </div>
   );
 }

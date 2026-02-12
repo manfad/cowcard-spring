@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +28,16 @@ public class TransponderController {
     @GetMapping("/available")
     public ServerRes<List<Transponder>> getAvailable() {
         return ServerRes.success(transponderService.findAvailable());
+    }
+
+    @PostMapping
+    public ServerRes<Transponder> create(@RequestBody Transponder transponder) {
+        return ServerRes.success(transponderService.create(transponder));
+    }
+
+    @PutMapping("/{id}")
+    public ServerRes<Transponder> update(@PathVariable Integer id, @RequestBody Transponder transponder) {
+        return ServerRes.success(transponderService.update(id, transponder));
     }
 
     @PutMapping("/assign/{transponderId}/{cowId}")

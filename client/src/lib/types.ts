@@ -98,10 +98,13 @@ export interface Semen extends BaseEntity {
 export interface Transponder extends BaseEntity {
   id: number;
   code: string;
-  currentCow: number | null;
+  currentCow: {
+    id: number;
+    tag: string;
+    currentFeedlot: { id: number; name: string } | null;
+  } | null;
   assignedDate: string | null;
   remark: string | null;
-  currentFeedlot: Feedlot | null;
 }
 
 export interface Cow extends BaseEntity {
@@ -187,6 +190,14 @@ export interface PregnancyDiagnosis extends BaseEntity {
   aiRecord: { id: number; code: string } | null;
   diagnosisBy: { id: number; name: string } | null;
   pdStatus: { id: number; name: string } | null;
+}
+
+export interface FeedlotWithCows {
+  id: number;
+  name: string;
+  remark: string;
+  active: boolean;
+  cows: CowView[];
 }
 
 // Form types

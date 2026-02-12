@@ -55,4 +55,20 @@ public class FeedlotController {
     public ServerRes<Feedlot> unassign(@PathVariable Integer cowId) {
         return feedlotService.unassign(cowId);
     }
+
+    @GetMapping("/{id}/with-cows")
+    public ServerRes<FeedlotWithCows> getWithCows(@PathVariable Integer id) {
+        return feedlotService.getWithCows(id);
+    }
+
+    @PutMapping("/assign-bulk/{feedlotId}")
+    public ServerRes<FeedlotWithCows> assignBulk(@PathVariable Integer feedlotId,
+            @RequestBody List<Integer> cowIds) {
+        return feedlotService.assignBulk(feedlotId, cowIds);
+    }
+
+    @PutMapping("/unassign-bulk")
+    public ServerRes<Void> unassignBulk(@RequestBody List<Integer> cowIds) {
+        return feedlotService.unassignBulk(cowIds);
+    }
 }
