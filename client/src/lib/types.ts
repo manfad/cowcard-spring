@@ -201,6 +201,7 @@ export interface CowTransponderHistory {
 export interface PregnancyDiagnosis {
   id: number;
   aiDate: string;
+  pregnantDate: string | null;
   aiRecord: { id: number; code: string } | null;
   diagnosisBy: { id: number; name: string } | null;
   pdStatus: { id: number; name: string; color: string | null } | null;

@@ -48,4 +48,7 @@ public class PregnancyDiagnosis extends BaseEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "pd_status", referencedColumnName = "id")
     private PdStatus pdStatus;
+
+    @Column(name = "pregnant_date")
+    private String pregnantDate;
 }

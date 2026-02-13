@@ -104,6 +104,8 @@ function PregnancyDiagnosisPage() {
 
   const pdDaySetting = systemSettings.find((s) => s.id === 1);
   const pdDayTotal = pdDaySetting ? parseInt(pdDaySetting.value) : 0;
+  const pregnantDaySetting = systemSettings.find((s) => s.id === 2);
+  const pregnantDayTotal = pregnantDaySetting ? parseInt(pregnantDaySetting.value) : 0;
 
   const statusMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: { diagnosisById: number; pdStatusId: number } }) =>
@@ -119,7 +121,7 @@ function PregnancyDiagnosisPage() {
   const handleStatusClick = (record: PregnancyDiagnosis) => {
     setSelectedRecord(record);
     setSelectedDiagnosisById(record.diagnosisBy?.id?.toString() ?? "");
-    setSelectedPdStatusId(record.pdStatus?.id?.toString() ?? "");
+    setSelectedPdStatusId("");
     setStatusDialogOpen(true);
   };
 
@@ -172,15 +174,17 @@ function PregnancyDiagnosisPage() {
       id: "progress",
       header: "Progress",
       cell: ({ row }) => {
-        const val = row.original.aiDate;
-        if (!val || !pdDayTotal) return "-";
-        const days = differenceInDays(new Date(), new Date(val));
-        const pct = Math.min(Math.round((days / pdDayTotal) * 100), 100);
+        const isPregnant = row.original.pdStatus?.id === 2;
+        const dateVal = isPregnant ? row.original.pregnantDate : row.original.aiDate;
+        const totalDays = isPregnant ? pregnantDayTotal : pdDayTotal;
+        if (!dateVal || !totalDays) return "-";
+        const days = differenceInDays(new Date(), new Date(dateVal));
+        const pct = Math.min(Math.round((days / totalDays) * 100), 100);
         return (
           <div className="min-w-24">
             <Progress value={pct} className="h-2" />
             <span className="text-xs text-muted-foreground">
-              {days}/{pdDayTotal} days
+              {days}/{totalDays} days
             </span>
           </div>
         );
@@ -388,7 +392,14 @@ function PregnancyDiagnosisPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {pdStatuses
-                    .filter((s) => s.active !== false)
+                    .filter((s) => {
+                      if (s.active === false) return false;
+                      const currentId = selectedRecord?.pdStatus?.id;
+                      if (currentId === 1) {
+                        return s.id === 2 || s.id === 3;
+                      }
+                      return s.id !== 1 && s.id !== 2 && s.id !== 3;
+                    })
                     .map((s) => (
                       <SelectItem key={s.id} value={s.id.toString()}>
                         {s.name}

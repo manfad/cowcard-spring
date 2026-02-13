@@ -1,5 +1,6 @@
 package cowcard.server.PregnancyDiagnosis;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,11 @@ public class PregnancyDiagnosisService {
         PdStatus pdStatus = new PdStatus();
         pdStatus.setId(pdStatusId);
         pd.setPdStatus(pdStatus);
+
+        // Auto-set pregnantDate when status is Pregnant (id=3)
+        if (pdStatusId == 3) {
+            pd.setPregnantDate(LocalDate.now().toString());
+        }
 
         return pregnancyDiagnosisRepository.save(pd);
     }
