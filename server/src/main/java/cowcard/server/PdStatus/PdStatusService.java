@@ -12,11 +12,11 @@ public class PdStatusService {
     private PdStatusRepository pdStatusRepository;
 
     public List<PdStatus> findAll() {
-        return pdStatusRepository.findAll();
+        return pdStatusRepository.findAllOrderByIdAsc();
     }
 
     public List<PdStatus> findAllActive() {
-        return pdStatusRepository.findByActiveTrue();
+        return pdStatusRepository.findByActiveTrueOrderByIdAsc();
     }
 
     public PdStatus toggleActive(Integer id) {

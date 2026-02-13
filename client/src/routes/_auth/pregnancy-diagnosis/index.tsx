@@ -174,7 +174,7 @@ function PregnancyDiagnosisPage() {
       id: "progress",
       header: "Progress",
       cell: ({ row }) => {
-        const isPregnant = row.original.pdStatus?.id === 2;
+        const isPregnant = row.original.pdStatus?.id === 3;
         const dateVal = isPregnant ? row.original.pregnantDate : row.original.aiDate;
         const totalDays = isPregnant ? pregnantDayTotal : pdDayTotal;
         if (!dateVal || !totalDays) return "-";
@@ -396,9 +396,9 @@ function PregnancyDiagnosisPage() {
                       if (s.active === false) return false;
                       const currentId = selectedRecord?.pdStatus?.id;
                       if (currentId === 1) {
-                        return s.id === 2 || s.id === 3;
+                        return s.id === 3 || s.id === 4;
                       }
-                      return s.id !== 1 && s.id !== 2 && s.id !== 3;
+                      return s.id !== 1 && s.id !== 3 && s.id !== 4;
                     })
                     .map((s) => (
                       <SelectItem key={s.id} value={s.id.toString()}>
