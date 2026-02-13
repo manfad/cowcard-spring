@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   useReactTable,
   getCoreRowModel,
@@ -12,6 +12,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { Eye } from "lucide-react";
+import { toast } from "sonner";
 import { aiRecordApi } from "@/lib/api";
 import type { AiRecord } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_auth/ai-records/")({
   component: AiRecordsPage,
@@ -43,6 +52,9 @@ const linkClass = "text-primary underline";
 function AiRecordsPage() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<AiRecord | null>(null);
+  const qc = useQueryClient();
 
   const { data: records = [], isLoading } = useQuery({
     queryKey: ["ai-records"],
@@ -51,6 +63,27 @@ function AiRecordsPage() {
       return res.data.data ?? [];
     },
   });
+
+  const statusMutation = useMutation({
+    mutationFn: ({ id, aiStatusId }: { id: number; aiStatusId: number }) =>
+      aiRecordApi.updateStatus(id, aiStatusId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["ai-records"] });
+      toast.success("Status updated");
+      setStatusDialogOpen(false);
+    },
+    onError: () => toast.error("Failed to update status"),
+  });
+
+  const handleStatusClick = (record: AiRecord) => {
+    setSelectedRecord(record);
+    setStatusDialogOpen(true);
+  };
+
+  const handleStatusSelect = (aiStatusId: number) => {
+    if (!selectedRecord) return;
+    statusMutation.mutate({ id: selectedRecord.id, aiStatusId });
+  };
 
   const columns = [
     columnHelper.display({
@@ -149,7 +182,19 @@ function AiRecordsPage() {
     }),
     columnHelper.accessor("status", {
       header: "Status",
-      cell: (info) => info.getValue()?.name ?? "-",
+      cell: (info) => {
+        const status = info.getValue();
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-auto px-2 py-1"
+            onClick={() => handleStatusClick(info.row.original)}
+          >
+            {status?.name ?? "-"}
+          </Button>
+        );
+      },
     }),
     columnHelper.display({
       id: "actions",
@@ -281,6 +326,34 @@ function AiRecordsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Update Status - {selectedRecord?.code ?? ""}
+            </DialogTitle>
+            <DialogDescription>
+              Select a status for this AI record.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 sm:justify-center">
+            <Button
+              disabled={statusMutation.isPending}
+              onClick={() => handleStatusSelect(1)}
+            >
+              {statusMutation.isPending ? "Saving..." : "Success"}
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={statusMutation.isPending}
+              onClick={() => handleStatusSelect(2)}
+            >
+              {statusMutation.isPending ? "Saving..." : "Fail"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

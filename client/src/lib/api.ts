@@ -171,6 +171,8 @@ export const aiRecordApi = {
     api.get<ServerRes<AiRecordDetail>>(`/ai-record/${id}/detail`),
   create: (data: AiRecordFormData) =>
     api.post<ServerRes<AiRecord>>("/ai-record", data),
+  updateStatus: (id: number, aiStatusId: number) =>
+    api.put<ServerRes<AiRecord>>(`/ai-record/${id}/update-status`, { aiStatusId }),
   getNextCode: () => api.get<ServerRes<string>>("/ai-record/next-code"),
   getDamAiCount: (damId: number) =>
     api.get<ServerRes<number>>(`/ai-record/dam-ai-count/${damId}`),

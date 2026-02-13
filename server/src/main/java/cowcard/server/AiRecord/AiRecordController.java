@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,6 +56,15 @@ public class AiRecordController {
     @GetMapping("/dam-ai-count/{damId}")
     public ServerRes<Long> getDamNonBullAiCount(@PathVariable Integer damId) {
         return ServerRes.success(aiRecordService.countNonBullAiRecords(damId));
+    }
+
+    public record UpdateAiStatusRequest(Integer aiStatusId) {
+    }
+
+    @PutMapping("/{id}/update-status")
+    public ServerRes<AiRecord> updateStatus(@PathVariable Integer id,
+                                            @RequestBody UpdateAiStatusRequest request) {
+        return ServerRes.success(aiRecordService.updateStatus(id, request.aiStatusId()));
     }
 
     @PostMapping

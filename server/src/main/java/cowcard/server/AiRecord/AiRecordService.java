@@ -119,6 +119,28 @@ public class AiRecordService {
     }
 
     @Transactional
+    public AiRecord updateStatus(Integer id, Integer aiStatusId) {
+        AiRecord aiRecord = aiRecordRepository.findById(id).orElseThrow();
+
+        AiStatus aiStatus = new AiStatus();
+        aiStatus.setId(aiStatusId);
+        aiRecord.setStatus(aiStatus);
+        aiRecordRepository.save(aiRecord);
+
+        // If fail (id=2), cascade to pregnancy diagnosis
+        if (aiStatusId == 2) {
+            pregnancyDiagnosisRepository.findByAiRecordId(id).ifPresent(pd -> {
+                PdStatus pdStatus = new PdStatus();
+                pdStatus.setId(2);
+                pd.setPdStatus(pdStatus);
+                pregnancyDiagnosisRepository.save(pd);
+            });
+        }
+
+        return aiRecord;
+    }
+
+    @Transactional
     public AiRecord create(AiRecord aiRecord, Integer semenId) {
         // Validate: dam can only have 3 non-bull AI records
         Semen semen = semenRepository.findById(semenId).orElseThrow();
