@@ -3,6 +3,7 @@ package cowcard.server.AiRecord;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import cowcard.server.Cow.Cow;
 import cowcard.server.Cow.CowRepository;
 import cowcard.server.PregnancyDiagnosis.PregnancyDiagnosis;
 import cowcard.server.PregnancyDiagnosis.PregnancyDiagnosisRepository;
+import cowcard.server.Semen.Semen;
+import cowcard.server.Semen.SemenRepository;
 import cowcard.server.Semen.SemenService;
 
 @Service
@@ -27,12 +30,36 @@ public class AiRecordService {
     private CowRepository cowRepository;
 
     @Autowired
+    private SemenRepository semenRepository;
+
+    @Autowired
     private SemenService semenService;
 
     private static final DateTimeFormatter CODE_DATE_FMT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     public List<AiRecord> findAll() {
         return aiRecordRepository.findAll();
+    }
+
+    public long countNonBullAiRecords(Integer damId) {
+        return aiRecordRepository.countByDamIdAndSemenBullFalse(damId);
+    }
+
+    public List<DamAiOverview> getDamAiOverview() {
+        List<AiRecord> nonBullRecords = aiRecordRepository.findBySemenBullFalseOrderByDamIdAscAiDateAsc();
+        return nonBullRecords.stream()
+                .collect(Collectors.groupingBy(r -> r.getDam().getId()))
+                .entrySet().stream()
+                .map(entry -> {
+                    List<AiRecord> records = entry.getValue();
+                    AiRecord first = records.getFirst();
+                    List<AiRecordSummary> summaries = records.stream()
+                            .limit(3)
+                            .map(AiRecordSummary::from)
+                            .toList();
+                    return new DamAiOverview(first.getDam().getId(), first.getDam().getTag(), summaries);
+                })
+                .toList();
     }
 
     public String generateNextCode() {
@@ -43,6 +70,15 @@ public class AiRecordService {
 
     @Transactional
     public AiRecord create(AiRecord aiRecord, Integer semenId) {
+        // Validate: dam can only have 3 non-bull AI records
+        Semen semen = semenRepository.findById(semenId).orElseThrow();
+        if (semen.getBull() == null || !semen.getBull()) {
+            long nonBullCount = countNonBullAiRecords(aiRecord.getDam().getId());
+            if (nonBullCount >= 3) {
+                throw new RuntimeException("This dam already has 3 AI records with non-bull semen. Only bull semen can be used.");
+            }
+        }
+
         // Auto-generate code
         aiRecord.setCode(generateNextCode());
 
@@ -61,8 +97,10 @@ public class AiRecordService {
         pd.setAiDate(saved.getAiDate());
         pregnancyDiagnosisRepository.save(pd);
 
-        // Deduct 1 straw from the semen
-        semenService.deductStraw(semenId);
+        // Deduct 1 straw from non-bull semen only
+        if (semen.getBull() == null || !semen.getBull()) {
+            semenService.deductStraw(semenId);
+        }
 
         return saved;
     }

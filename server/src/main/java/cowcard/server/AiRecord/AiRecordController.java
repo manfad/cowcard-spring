@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +42,16 @@ public class AiRecordController {
         return ServerRes.success(aiRecordService.generateNextCode());
     }
 
+    @GetMapping("/dam-ai-overview")
+    public ServerRes<List<DamAiOverview>> getDamAiOverview() {
+        return ServerRes.success(aiRecordService.getDamAiOverview());
+    }
+
+    @GetMapping("/dam-ai-count/{damId}")
+    public ServerRes<Long> getDamNonBullAiCount(@PathVariable Integer damId) {
+        return ServerRes.success(aiRecordService.countNonBullAiRecords(damId));
+    }
+
     @PostMapping
     public ServerRes<AiRecord> create(@RequestBody CreateAiRecordRequest request) {
         AiRecord aiRecord = new AiRecord();
@@ -69,6 +80,10 @@ public class AiRecordController {
             aiRecord.setPreparedBy(preparedBy);
         }
 
-        return ServerRes.success(aiRecordService.create(aiRecord, request.semenId()));
+        try {
+            return ServerRes.success(aiRecordService.create(aiRecord, request.semenId()));
+        } catch (RuntimeException e) {
+            return ServerRes.<AiRecord>error(e.getMessage());
+        }
     }
 }

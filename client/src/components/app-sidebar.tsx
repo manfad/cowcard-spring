@@ -1,22 +1,4 @@
-import {
-  Home,
-  Users,
-  LogOut,
-  Tag,
-  Warehouse,
-  Building2,
-  FlaskConical,
-  UserCheck,
-  Radio,
-  FileText,
-  Baby,
-  Activity,
-  Palette,
-  Settings,
-  ClipboardEdit,
-  ClipboardPlus,
-  ExternalLink,
-} from "lucide-react";
+import { LogOut, ExternalLink } from "lucide-react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import {
   Sidebar,
@@ -35,48 +17,45 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 
 const mainNav = [
-  { title: "Dashboard", href: "/", icon: Home },
-  { title: "Cows", href: "/cows", icon: Tag },
+  { title: "Dashboard", href: "/" },
+  { title: "Cows", href: "/cows" },
+  { title: "Dam AI Overview", href: "/dam-ai-overview" },
 ];
 
 const formNav = [
-  { title: "Dam Form", href: "/dam-form", icon: ClipboardEdit },
-  { title: "Cow Form", href: "/cow-form", icon: ClipboardPlus },
-  { title: "Calf Form", href: "/calf-form", icon: Baby },
-  { title: "AI Record Form", href: "/ai-record-form", icon: FileText },
+  { title: "Dam Form", href: "/dam-form" },
+  { title: "Cow Form", href: "/cow-form" },
+  { title: "Calf Form", href: "/calf-form" },
+  { title: "AI Record Form", href: "/ai-record-form" },
 ];
 
 const managementNav = [
-  { title: "Feedlot Management", href: "/feedlot-management", icon: Building2 },
-  { title: "Semen", href: "/semen", icon: FlaskConical },
-  { title: "Transponders", href: "/transponders", icon: Radio },
+  { title: "Feedlot Management", href: "/feedlot-management" },
+  { title: "Semen", href: "/semen" },
+  { title: "Transponders", href: "/transponders" },
 ];
 
 const recordsNav = [
-  { title: "AI Records", href: "/ai-records", icon: FileText },
-  { title: "Calf Records", href: "/calf-records", icon: Baby },
-  {
-    title: "Pregnancy Diagnosis",
-    href: "/pregnancy-diagnosis",
-    icon: Activity,
-  },
+  { title: "AI Records", href: "/ai-records" },
+  { title: "Pregnancy Diagnosis", href: "/pregnancy-diagnosis" },
+  { title: "Calf Records", href: "/calf-records" },
 ];
 
 const libraryNav = [
-  { title: "Feedlots", href: "/feedlots", icon: Warehouse },
-  { title: "Inseminators", href: "/inseminators", icon: UserCheck },
-  { title: "Colors", href: "/colors", icon: Palette },
-  { title: "Cow Genders", href: "/cow-genders", icon: Settings },
-  { title: "Cow Roles", href: "/cow-roles", icon: Settings },
-  { title: "Cow Statuses", href: "/cow-statuses", icon: Settings },
-  { title: "AI Statuses", href: "/ai-statuses", icon: Settings },
-  { title: "Calf Statuses", href: "/calf-statuses", icon: Settings },
-  { title: "PD Statuses", href: "/pd-statuses", icon: Settings },
+  { title: "Feedlots", href: "/feedlots" },
+  { title: "Inseminators", href: "/inseminators" },
+  { title: "Colors", href: "/colors" },
+  { title: "Cow Genders", href: "/cow-genders" },
+  { title: "Cow Roles", href: "/cow-roles" },
+  { title: "Cow Statuses", href: "/cow-statuses" },
+  { title: "AI Statuses", href: "/ai-statuses" },
+  { title: "Calf Statuses", href: "/calf-statuses" },
+  { title: "PD Statuses", href: "/pd-statuses" },
 ];
 
 const systemNav = [
-  { title: "Users", href: "/users", icon: Users },
-  { title: "System Settings", href: "/system-settings", icon: Settings },
+  { title: "Users", href: "/users" },
+  { title: "System Settings", href: "/system-settings" },
 ];
 
 function NavGroup({
@@ -85,7 +64,7 @@ function NavGroup({
   pathname,
 }: {
   label: string;
-  items: { title: string; href: string; icon: React.ComponentType }[];
+  items: { title: string; href: string }[];
   pathname: string;
 }) {
   return (
@@ -111,7 +90,7 @@ function NavGroup({
 function FormNavGroup({
   items,
 }: {
-  items: { title: string; href: string; icon: React.ComponentType<{ className?: string }> }[];
+  items: { title: string; href: string }[];
 }) {
   return (
     <SidebarGroup>
@@ -122,7 +101,6 @@ function FormNavGroup({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
                 <a href={item.href} target="_blank" rel="noopener noreferrer">
-                  <item.icon className="h-4 w-4" />
                   <span>{item.title}</span>
                   <ExternalLink className="ml-auto h-3 w-3 text-muted-foreground" />
                 </a>

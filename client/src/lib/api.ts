@@ -14,6 +14,7 @@ import type {
   Transponder,
   AiRecord,
   AiRecordFormData,
+  DamAiOverview,
   CalfRecord,
   TransponderRecord,
   CowFeedlotHistory,
@@ -149,6 +150,10 @@ export const aiRecordApi = {
   create: (data: AiRecordFormData) =>
     api.post<ServerRes<AiRecord>>("/ai-record", data),
   getNextCode: () => api.get<ServerRes<string>>("/ai-record/next-code"),
+  getDamAiCount: (damId: number) =>
+    api.get<ServerRes<number>>(`/ai-record/dam-ai-count/${damId}`),
+  getDamAiOverview: () =>
+    api.get<ServerRes<DamAiOverview[]>>("/ai-record/dam-ai-overview"),
 };
 
 export const calfRecordApi = {

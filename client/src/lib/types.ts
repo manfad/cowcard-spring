@@ -203,6 +203,20 @@ export interface AiRecordFormData {
   remark: string;
 }
 
+// Dam AI Overview
+export interface AiRecordSummary {
+  id: number;
+  code: string;
+  aiDate: string;
+  semenName: string;
+}
+
+export interface DamAiOverview {
+  damId: number;
+  damTag: string;
+  aiRecords: AiRecordSummary[];
+}
+
 // Form types
 export interface DamOption {
   id: number;

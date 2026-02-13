@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { aiRecordApi, formApi, inseminatorApi } from "@/lib/api";
 import { toast } from "sonner";
 import { format, formatDate } from "date-fns";
-import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
+import { AlertTriangle, CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,6 +95,23 @@ export function AiRecordForm() {
     queryKey: ["inseminators"],
     queryFn: () => inseminatorApi.getAll().then((r) => r.data.data!),
   });
+
+  // Fetch dam's non-bull AI count when dam is selected
+  const selectedDamId = form.watch("damId");
+  const { data: damAiCount } = useQuery({
+    queryKey: ["dam-ai-count", selectedDamId],
+    queryFn: () =>
+      aiRecordApi
+        .getDamAiCount(parseInt(selectedDamId))
+        .then((r) => r.data.data!),
+    enabled: !!selectedDamId,
+  });
+
+  // Filter semen: bull-only when dam has >= 3 non-bull AI records
+  const bullOnly = damAiCount != null && damAiCount >= 3;
+  const filteredSemenList = bullOnly
+    ? semenList.filter((s) => s.bull === true)
+    : semenList;
 
   const mutation = useMutation({
     mutationFn: (data: AiRecordFormValues) =>
@@ -241,6 +258,7 @@ export function AiRecordForm() {
                                       value={dam.tag}
                                       onSelect={() => {
                                         field.onChange(String(dam.id));
+                                        form.setValue("semenId", "");
                                         setDamOpen(false);
                                       }}
                                     >
@@ -310,7 +328,7 @@ export function AiRecordForm() {
                           <CommandList>
                             <CommandEmpty>No semen found.</CommandEmpty>
                             <CommandGroup>
-                              {semenList.map((semen) => (
+                              {filteredSemenList.map((semen) => (
                                 <CommandItem
                                   key={semen.id}
                                   value={semen.name}
@@ -333,6 +351,13 @@ export function AiRecordForm() {
                         </Command>
                       </PopoverContent>
                     </Popover>
+                    {bullOnly && (
+                      <p className="flex items-center gap-1 text-sm text-amber-600">
+                        <AlertTriangle className="h-3.5 w-3.5" />
+                        This dam has {damAiCount} AI records — only bull semen
+                        is available.
+                      </p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
