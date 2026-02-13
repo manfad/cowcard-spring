@@ -28,48 +28,45 @@ import cowcard.server.Semen.Semen;
 @Entity
 @Table(name = "ai_records")
 public class AiRecord extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Integer id;
 
-    @Column(name = "code")
-    private String code;
+	@Column(name = "code")
+	private String code;
 
-    @ManyToOne
-    @JoinColumn(name = "dam_id", referencedColumnName = "id", nullable = false)
-    private Cow dam;
+	@ManyToOne
+	@JoinColumn(name = "dam_id", referencedColumnName = "id", nullable = false)
+	private Cow dam;
 
-    @ManyToOne
-    @JoinColumn(name = "semen_id", referencedColumnName = "id", nullable = false)
-    private Semen semen;
+	@ManyToOne
+	@JoinColumn(name = "semen_id", referencedColumnName = "id", nullable = false)
+	private Semen semen;
 
-    @Column(name = "feedlot")
-    private String feedlot;
+	@Column(name = "feedlot")
+	private String feedlot;
 
-    @ManyToOne
-    @JoinColumn(name = "ai_by", referencedColumnName = "id")
-    private Inseminator aiBy;
+	@ManyToOne
+	@JoinColumn(name = "ai_by", referencedColumnName = "id")
+	private Inseminator aiBy;
 
-    @ManyToOne
-    @JoinColumn(name = "prepared_by", referencedColumnName = "id")
-    private Inseminator preparedBy;
+	@ManyToOne
+	@JoinColumn(name = "prepared_by", referencedColumnName = "id")
+	private Inseminator preparedBy;
 
-    @ManyToOne
-    @JoinColumn(name = "status", referencedColumnName = "id")
-    private AiStatus status;
+	@ManyToOne
+	@JoinColumn(name = "status", referencedColumnName = "id")
+	private AiStatus status;
 
-    @Column(name = "date")
-    private String date;
+	@Column(name = "ai_date")
+	private String aiDate;
 
-    @Column(name = "ai_date")
-    private String aiDate;
+	@Column(name = "ai_time")
+	private String aiTime;
 
-    @Column(name = "ai_time")
-    private String aiTime;
-
-    @Column(name = "remark")
-    private String remark;
+	@Column(name = "remark")
+	private String remark;
 }

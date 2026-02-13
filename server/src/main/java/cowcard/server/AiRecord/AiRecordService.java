@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cowcard.server.AiStatus.AiStatus;
 import cowcard.server.CalfRecord.CalfRecordRepository;
 import cowcard.server.Cow.Cow;
 import cowcard.server.Cow.CowRepository;
+import cowcard.server.PdStatus.PdStatus;
 import cowcard.server.PregnancyDiagnosis.PregnancyDiagnosis;
 import cowcard.server.PregnancyDiagnosis.PregnancyDiagnosisRepository;
 import cowcard.server.Semen.Semen;
@@ -136,6 +138,11 @@ public class AiRecordService {
             aiRecord.setFeedlot(dam.getCurrentFeedlot().getName());
         }
 
+        // Set default AI status (id=3)
+        AiStatus defaultAiStatus = new AiStatus();
+        defaultAiStatus.setId(3);
+        aiRecord.setStatus(defaultAiStatus);
+
         // Save the AI record
         AiRecord saved = aiRecordRepository.save(aiRecord);
 
@@ -143,6 +150,10 @@ public class AiRecordService {
         PregnancyDiagnosis pd = new PregnancyDiagnosis();
         pd.setAiRecord(saved);
         pd.setAiDate(saved.getAiDate());
+        // Set default PD status (id=3)
+        PdStatus defaultPdStatus = new PdStatus();
+        defaultPdStatus.setId(3);
+        pd.setPdStatus(defaultPdStatus);
         pregnancyDiagnosisRepository.save(pd);
 
         // Deduct 1 straw from non-bull semen only
