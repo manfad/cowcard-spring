@@ -20,6 +20,9 @@ public class SystemSettingController {
     @Autowired
     private SystemSettingService systemSettingService;
 
+    @Autowired
+    private CronService cronService;
+
     @GetMapping("/all")
     public ServerRes<List<SystemSetting>> getAll() {
         return ServerRes.success(systemSettingService.findAll());
@@ -41,6 +44,12 @@ public class SystemSettingController {
         setting.setValue(request.value());
         setting.setRemark(request.remark());
         return ServerRes.success(systemSettingService.update(id, setting));
+    }
+
+    @PostMapping("/run-cron")
+    public ServerRes<String> runCron() {
+        cronService.execute();
+        return ServerRes.success("Cron job executed successfully");
     }
 
     public record SystemSettingRequest(String name, String value, String remark) {}

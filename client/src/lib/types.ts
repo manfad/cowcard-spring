@@ -202,9 +202,26 @@ export interface PregnancyDiagnosis {
   id: number;
   aiDate: string;
   pregnantDate: string | null;
-  aiRecord: { id: number; code: string } | null;
-  diagnosisBy: { id: number; name: string } | null;
-  pdStatus: { id: number; name: string; color: string | null } | null;
+  aiRecordCode: string | null;
+  aiRecordId: number | null;
+  damId: number | null;
+  damTag: string | null;
+  semenId: number | null;
+  semenName: string | null;
+  diagnosisBy: string | null;
+  pdStatusId: number | null;
+  pdStatusName: string | null;
+  pdStatusColor: string | null;
+}
+
+export interface RegisterCalfData {
+  tag: string;
+  genderId: number;
+  dob: string;
+  weight: number | null;
+  colorId: number;
+  feedlotId: number | null;
+  remark: string;
 }
 
 export interface FeedlotWithCows {

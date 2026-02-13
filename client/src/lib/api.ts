@@ -44,6 +44,7 @@ import type {
   CowDetail,
   SemenDetail,
   AiRecordDetail,
+  RegisterCalfData,
 } from "./types";
 
 const api = axios.create({
@@ -207,6 +208,8 @@ export const pregnancyDiagnosisApi = {
     api.get<ServerRes<PregnancyDiagnosis[]>>("/pregnancy-diagnosis/all"),
   updateStatus: (id: number, data: { diagnosisById: number; pdStatusId: number }) =>
     api.put<ServerRes<PregnancyDiagnosis>>(`/pregnancy-diagnosis/${id}/update-status`, data),
+  registerCalf: (id: number, data: RegisterCalfData) =>
+    api.post<ServerRes<CalfRecord>>(`/pregnancy-diagnosis/${id}/register-calf`, data),
 };
 
 // Lookup entities
@@ -291,6 +294,7 @@ export const systemSettingApi = {
     api.post<ServerRes<SystemSetting>>("/system-setting", data),
   update: (id: number, data: SystemSettingFormData) =>
     api.put<ServerRes<SystemSetting>>(`/system-setting/${id}`, data),
+  runCron: () => api.post<ServerRes<string>>("/system-setting/run-cron"),
 };
 
 export default api;

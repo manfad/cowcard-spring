@@ -89,6 +89,12 @@ function SystemSettingsPage() {
     onError: () => toast.error("Failed to update setting"),
   });
 
+  const cronMutation = useMutation({
+    mutationFn: () => systemSettingApi.runCron(),
+    onSuccess: () => toast.success("Cron job executed"),
+    onError: () => toast.error("Failed to run cron job"),
+  });
+
   const handleAdd = () => {
     setEditingSetting(null);
     setFormName("");
@@ -183,6 +189,13 @@ function SystemSettingsPage() {
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="w-60"
             />
+            <Button
+              variant="outline"
+              onClick={() => cronMutation.mutate()}
+              disabled={cronMutation.isPending}
+            >
+              {cronMutation.isPending ? "Running..." : "Run Cron"}
+            </Button>
             <Button onClick={handleAdd}>Add New</Button>
           </CardAction>
         </CardHeader>

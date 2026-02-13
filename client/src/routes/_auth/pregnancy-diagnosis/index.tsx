@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod/v4";
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,12 +14,20 @@ import {
   createColumnHelper,
   type SortingState,
 } from "@tanstack/react-table";
-import { differenceInDays, formatDistanceToNow } from "date-fns";
+import { differenceInDays, format, formatDistanceToNow } from "date-fns";
 import { Pencil } from "lucide-react";
 import { colorBtnMap } from "@/components/ui/color-picker";
 import { toast } from "sonner";
-import { pregnancyDiagnosisApi, pdStatusApi, inseminatorApi, systemSettingApi } from "@/lib/api";
-import type { PregnancyDiagnosis } from "@/lib/types";
+import {
+  pregnancyDiagnosisApi,
+  pdStatusApi,
+  inseminatorApi,
+  systemSettingApi,
+  colorApi,
+  feedlotApi,
+  cowGenderApi,
+} from "@/lib/api";
+import type { PregnancyDiagnosis, RegisterCalfData } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -27,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import {
   Card,
@@ -51,6 +63,14 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 
 export const Route = createFileRoute("/_auth/pregnancy-diagnosis/")({
   component: PregnancyDiagnosisPage,
@@ -60,10 +80,23 @@ const columnHelper = createColumnHelper<PregnancyDiagnosis>();
 
 const linkClass = "text-primary underline";
 
+const calfSchema = z.object({
+  tag: z.string().min(1, "Tag is required"),
+  genderId: z.string().min(1, "Gender is required"),
+  dob: z.string().min(1, "Date of birth is required"),
+  weight: z.string(),
+  colorId: z.string().min(1, "Color is required"),
+  feedlotId: z.string(),
+  remark: z.string(),
+});
+
+type CalfFormValues = z.infer<typeof calfSchema>;
+
 function PregnancyDiagnosisPage() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [calfDialogOpen, setCalfDialogOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] =
     useState<PregnancyDiagnosis | null>(null);
   const [selectedDiagnosisById, setSelectedDiagnosisById] = useState("");
@@ -102,14 +135,45 @@ function PregnancyDiagnosisPage() {
     },
   });
 
+  const { data: colors = [] } = useQuery({
+    queryKey: ["colors"],
+    queryFn: async () => {
+      const res = await colorApi.getAll();
+      return res.data.data ?? [];
+    },
+  });
+
+  const { data: feedlots = [] } = useQuery({
+    queryKey: ["feedlots"],
+    queryFn: async () => {
+      const res = await feedlotApi.getAll();
+      return res.data.data ?? [];
+    },
+  });
+
+  const { data: genders = [] } = useQuery({
+    queryKey: ["cow-genders"],
+    queryFn: async () => {
+      const res = await cowGenderApi.getAll();
+      return res.data.data ?? [];
+    },
+  });
+
   const pdDaySetting = systemSettings.find((s) => s.id === 1);
   const pdDayTotal = pdDaySetting ? parseInt(pdDaySetting.value) : 0;
   const pregnantDaySetting = systemSettings.find((s) => s.id === 2);
-  const pregnantDayTotal = pregnantDaySetting ? parseInt(pregnantDaySetting.value) : 0;
+  const pregnantDayTotal = pregnantDaySetting
+    ? parseInt(pregnantDaySetting.value)
+    : 0;
 
   const statusMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: { diagnosisById: number; pdStatusId: number } }) =>
-      pregnancyDiagnosisApi.updateStatus(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: { diagnosisById: number; pdStatusId: number };
+    }) => pregnancyDiagnosisApi.updateStatus(id, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["pregnancy-diagnosis"] });
       toast.success("Status updated");
@@ -118,15 +182,60 @@ function PregnancyDiagnosisPage() {
     onError: () => toast.error("Failed to update status"),
   });
 
-  const handleStatusClick = (record: PregnancyDiagnosis) => {
+  const calfForm = useForm<CalfFormValues>({
+    resolver: zodResolver(calfSchema),
+    defaultValues: {
+      tag: "",
+      genderId: "",
+      dob: format(new Date(), "yyyy-MM-dd"),
+      weight: "",
+      colorId: "",
+      feedlotId: "",
+      remark: "",
+    },
+  });
+
+  const calfMutation = useMutation({
+    mutationFn: ({ pdId, data }: { pdId: number; data: RegisterCalfData }) =>
+      pregnancyDiagnosisApi.registerCalf(pdId, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["pregnancy-diagnosis"] });
+      qc.invalidateQueries({ queryKey: ["calf-records"] });
+      toast.success("Calf registered successfully");
+      setCalfDialogOpen(false);
+    },
+    onError: () => toast.error("Failed to register calf"),
+  });
+
+  const handleStatusButtonClick = (record: PregnancyDiagnosis) => {
+    const statusId = record.pdStatusId;
+    if (statusId === 5) {
+      setSelectedRecord(record);
+      calfForm.reset({
+        tag: "",
+        genderId: "",
+        dob: format(new Date(), "yyyy-MM-dd"),
+        weight: "",
+        colorId: "",
+        feedlotId: "",
+        remark: "",
+      });
+      setCalfDialogOpen(true);
+    } else {
+      handlePdStatusClick(record);
+    }
+  };
+
+  const handlePdStatusClick = (record: PregnancyDiagnosis) => {
     setSelectedRecord(record);
-    setSelectedDiagnosisById(record.diagnosisBy?.id?.toString() ?? "");
+    setSelectedDiagnosisById("");
     setSelectedPdStatusId("");
     setStatusDialogOpen(true);
   };
 
-  const handleSubmit = () => {
-    if (!selectedRecord || !selectedDiagnosisById || !selectedPdStatusId) return;
+  const handleStatusSubmit = () => {
+    if (!selectedRecord || !selectedDiagnosisById || !selectedPdStatusId)
+      return;
     statusMutation.mutate({
       id: selectedRecord.id,
       data: {
@@ -136,20 +245,35 @@ function PregnancyDiagnosisPage() {
     });
   };
 
+  const handleCalfSubmit = (data: CalfFormValues) => {
+    if (!selectedRecord) return;
+    const payload: RegisterCalfData = {
+      tag: data.tag,
+      genderId: parseInt(data.genderId),
+      dob: data.dob,
+      weight: data.weight ? parseFloat(data.weight) : null,
+      colorId: parseInt(data.colorId),
+      feedlotId: data.feedlotId ? parseInt(data.feedlotId) : null,
+      remark: data.remark,
+    };
+    calfMutation.mutate({ pdId: selectedRecord.id, data: payload });
+  };
+
   const columns = [
     columnHelper.display({
       id: "index",
       header: "#",
       cell: ({ row }) => row.index + 1,
     }),
-    columnHelper.accessor("aiRecord", {
+    columnHelper.accessor("aiRecordCode", {
       header: "AI Record",
       cell: (info) => {
-        const aiRecord = info.getValue();
-        if (!aiRecord) return "-";
+        const code = info.getValue();
+        const id = info.row.original.aiRecordId;
+        if (!code) return "-";
         return (
-          <Link to={`/ai-records/${aiRecord.id}`} className={linkClass}>
-            {aiRecord.code}
+          <Link to={`/ai-records/${id}`} className={linkClass}>
+            {code}
           </Link>
         );
       },
@@ -174,8 +298,10 @@ function PregnancyDiagnosisPage() {
       id: "progress",
       header: "Progress",
       cell: ({ row }) => {
-        const isPregnant = row.original.pdStatus?.id === 3;
-        const dateVal = isPregnant ? row.original.pregnantDate : row.original.aiDate;
+        const isPregnant = row.original.pdStatusId === 3;
+        const dateVal = isPregnant
+          ? row.original.pregnantDate
+          : row.original.aiDate;
         const totalDays = isPregnant ? pregnantDayTotal : pdDayTotal;
         if (!dateVal || !totalDays) return "-";
         const days = differenceInDays(new Date(), new Date(dateVal));
@@ -192,29 +318,24 @@ function PregnancyDiagnosisPage() {
     }),
     columnHelper.accessor("diagnosisBy", {
       header: "Diagnosis By",
-      cell: (info) => {
-        const diagnosisBy = info.getValue();
-        if (!diagnosisBy) return "-";
-        return (
-          <Link to={`/inseminators/${diagnosisBy.id}`} className={linkClass}>
-            {diagnosisBy.name}
-          </Link>
-        );
-      },
+      cell: (info) => info.getValue() ?? "-",
     }),
-    columnHelper.accessor("pdStatus", {
+    columnHelper.display({
+      id: "pdStatus",
       header: "PD Status",
-      cell: (info) => {
-        const status = info.getValue();
-        const colorClass = status?.color ? colorBtnMap[status.color] : "";
+      cell: ({ row }) => {
+        const { pdStatusId, pdStatusName, pdStatusColor } = row.original;
+        const isDisabled = pdStatusId === 2 || pdStatusId === 3 || pdStatusId === 4;
+        const colorClass = pdStatusColor ? colorBtnMap[pdStatusColor] : "";
         return (
           <Button
             size="sm"
-            variant={status?.color ? "default" : "outline"}
+            variant={pdStatusColor ? "default" : "outline"}
             className={"h-auto px-2 py-1 " + colorClass}
-            onClick={() => handleStatusClick(info.row.original)}
+            disabled={isDisabled}
+            onClick={() => handleStatusButtonClick(row.original)}
           >
-            {status?.name ?? "-"}
+            {pdStatusName ?? "-"}
           </Button>
         );
       },
@@ -227,7 +348,7 @@ function PregnancyDiagnosisPage() {
           variant="ghost"
           size="icon"
           className="h-8 w-8"
-          onClick={() => handleStatusClick(info.row.original)}
+          onClick={() => handlePdStatusClick(info.row.original)}
         >
           <Pencil className="h-4 w-4" />
         </Button>
@@ -356,11 +477,12 @@ function PregnancyDiagnosisPage() {
         </CardContent>
       </Card>
 
+      {/* PD Status Update Dialog */}
       <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Update PD Status - {selectedRecord?.aiRecord?.code ?? ""}
+              Update PD Status - {selectedRecord?.aiRecordCode ?? ""}
             </DialogTitle>
             <DialogDescription>
               Update the diagnosis details for this pregnancy diagnosis.
@@ -369,7 +491,10 @@ function PregnancyDiagnosisPage() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Diagnosis By</Label>
-              <Select value={selectedDiagnosisById} onValueChange={setSelectedDiagnosisById}>
+              <Select
+                value={selectedDiagnosisById}
+                onValueChange={setSelectedDiagnosisById}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select inseminator..." />
                 </SelectTrigger>
@@ -386,7 +511,10 @@ function PregnancyDiagnosisPage() {
             </div>
             <div className="space-y-2">
               <Label>PD Status</Label>
-              <Select value={selectedPdStatusId} onValueChange={setSelectedPdStatusId}>
+              <Select
+                value={selectedPdStatusId}
+                onValueChange={setSelectedPdStatusId}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select status..." />
                 </SelectTrigger>
@@ -394,7 +522,7 @@ function PregnancyDiagnosisPage() {
                   {pdStatuses
                     .filter((s) => {
                       if (s.active === false) return false;
-                      const currentId = selectedRecord?.pdStatus?.id;
+                      const currentId = selectedRecord?.pdStatusId;
                       if (currentId === 1) {
                         return s.id === 3 || s.id === 4;
                       }
@@ -417,12 +545,212 @@ function PregnancyDiagnosisPage() {
               Cancel
             </Button>
             <Button
-              disabled={statusMutation.isPending || !selectedDiagnosisById || !selectedPdStatusId}
-              onClick={handleSubmit}
+              disabled={
+                statusMutation.isPending ||
+                !selectedDiagnosisById ||
+                !selectedPdStatusId
+              }
+              onClick={handleStatusSubmit}
             >
               {statusMutation.isPending ? "Saving..." : "Update"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Calf Registration Dialog */}
+      <Dialog open={calfDialogOpen} onOpenChange={setCalfDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              Register Calf - {selectedRecord?.aiRecordCode ?? ""}
+            </DialogTitle>
+            <DialogDescription>
+              Register a new calf from this pregnancy diagnosis.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...calfForm}>
+            <form
+              onSubmit={calfForm.handleSubmit(handleCalfSubmit)}
+              className="space-y-4"
+            >
+              <FormField
+                control={calfForm.control}
+                name="tag"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tag Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter tag number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={calfForm.control}
+                name="genderId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Gender</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        className="flex gap-4"
+                      >
+                        {genders
+                          .filter((g) => g.active !== false)
+                          .map((g) => (
+                            <div
+                              key={g.id}
+                              className="flex items-center gap-2"
+                            >
+                              <RadioGroupItem
+                                value={g.id.toString()}
+                                id={`gender-${g.id}`}
+                              />
+                              <Label htmlFor={`gender-${g.id}`}>
+                                {g.name}
+                              </Label>
+                            </div>
+                          ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Dam</Label>
+                  <Input
+                    value={selectedRecord?.damTag ?? "-"}
+                    disabled
+                    className="bg-muted"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Semen</Label>
+                  <Input
+                    value={selectedRecord?.semenName ?? "-"}
+                    disabled
+                    className="bg-muted"
+                  />
+                </div>
+              </div>
+              <FormField
+                control={calfForm.control}
+                name="dob"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date of Birth</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={calfForm.control}
+                name="weight"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Weight (kg)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter weight"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={calfForm.control}
+                name="colorId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Color</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select color..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {colors
+                          .filter((c) => c.active !== false)
+                          .map((c) => (
+                            <SelectItem key={c.id} value={c.id.toString()}>
+                              {c.name}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={calfForm.control}
+                name="feedlotId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Feedlot</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select feedlot (optional)..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {feedlots
+                          .filter((f) => f.active !== false)
+                          .map((f) => (
+                            <SelectItem key={f.id} value={f.id.toString()}>
+                              {f.name}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={calfForm.control}
+                name="remark"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Remark</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter remark (optional)"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCalfDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={calfMutation.isPending}>
+                  {calfMutation.isPending ? "Registering..." : "Register Calf"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>
