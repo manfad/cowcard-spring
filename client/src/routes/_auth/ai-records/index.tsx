@@ -11,7 +11,8 @@ import {
   createColumnHelper,
   type SortingState,
 } from "@tanstack/react-table";
-import { Eye } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { Eye, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { aiRecordApi } from "@/lib/api";
 import type { AiRecord } from "@/lib/types";
@@ -132,10 +133,19 @@ function AiRecordsPage() {
     }),
     columnHelper.accessor("aiDate", {
       header: "AI Date",
-      cell: (info) =>
-        info.getValue()
-          ? new Date(info.getValue()!).toLocaleDateString()
-          : "-",
+      cell: (info) => {
+        const val = info.getValue();
+        if (!val) return "-";
+        const date = new Date(val);
+        return (
+          <div>
+            {date.toLocaleDateString()}
+            <span className="block text-xs text-muted-foreground">
+              {formatDistanceToNow(date, { addSuffix: true })}
+            </span>
+          </div>
+        );
+      },
     }),
     columnHelper.accessor("aiTime", {
       header: "AI Time",
@@ -184,15 +194,23 @@ function AiRecordsPage() {
       header: "Status",
       cell: (info) => {
         const status = info.getValue();
+        const statusId = status?.id;
+        const isResolved = statusId === 1 || statusId === 2;
+        const btnClass =
+          statusId === 1
+            ? "bg-green-600 text-white"
+            : statusId === 2
+              ? "bg-red-600 text-white"
+              : "border border-input bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer";
         return (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-auto px-2 py-1"
+          <button
+            type="button"
+            className={"inline-flex items-center rounded-md px-2 py-1 text-sm font-medium " + btnClass}
+            disabled={isResolved}
             onClick={() => handleStatusClick(info.row.original)}
           >
             {status?.name ?? "-"}
-          </Button>
+          </button>
         );
       },
     }),
@@ -200,11 +218,21 @@ function AiRecordsPage() {
       id: "actions",
       header: "Actions",
       cell: (info) => (
-        <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-          <Link to={`/ai-records/${info.row.original.id}`}>
-            <Eye className="h-4 w-4" />
-          </Link>
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+            <Link to={`/ai-records/${info.row.original.id}`}>
+              <Eye className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => handleStatusClick(info.row.original)}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        </div>
       ),
     }),
   ];
@@ -244,7 +272,13 @@ function AiRecordsPage() {
               className="w-60"
             />
             <Button asChild>
-              <a href="/ai-record-form" target="_blank" rel="noopener noreferrer">Add New</a>
+              <a
+                href="/ai-record-form"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Add New
+              </a>
             </Button>
           </CardAction>
         </CardHeader>
@@ -257,7 +291,11 @@ function AiRecordsPage() {
                     {hg.headers.map((h) => (
                       <TableHead
                         key={h.id}
-                        className={h.column.getCanSort() ? "cursor-pointer select-none" : ""}
+                        className={
+                          h.column.getCanSort()
+                            ? "cursor-pointer select-none"
+                            : ""
+                        }
                         onClick={h.column.getToggleSortingHandler()}
                       >
                         <div className="flex items-center gap-1">
@@ -267,7 +305,9 @@ function AiRecordsPage() {
                                 h.column.columnDef.header,
                                 h.getContext(),
                               )}
-                          {{ asc: " ↑", desc: " ↓" }[h.column.getIsSorted() as string] ?? null}
+                          {{ asc: " ↑", desc: " ↓" }[
+                            h.column.getIsSorted() as string
+                          ] ?? null}
                         </div>
                       </TableHead>
                     ))}

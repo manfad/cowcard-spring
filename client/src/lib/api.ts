@@ -204,6 +204,8 @@ export const cowTransponderHistoryApi = {
 export const pregnancyDiagnosisApi = {
   getAll: () =>
     api.get<ServerRes<PregnancyDiagnosis[]>>("/pregnancy-diagnosis/all"),
+  updateStatus: (id: number, data: { diagnosisById: number; pdStatusId: number }) =>
+    api.put<ServerRes<PregnancyDiagnosis>>(`/pregnancy-diagnosis/${id}/update-status`, data),
 };
 
 // Lookup entities

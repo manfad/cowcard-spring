@@ -26,6 +26,7 @@ import cowcard.server.CowRole.CowRole;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+// Lookup IDs: 1=Active, 2=Cull, 3=Dead, 4=New Born, 5=Growing
 @Entity
 @Table(name = "cow_status")
 public class CowStatus extends BaseEntity implements Serializable {

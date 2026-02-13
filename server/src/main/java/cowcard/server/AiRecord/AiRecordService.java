@@ -47,7 +47,7 @@ public class AiRecordService {
     private static final DateTimeFormatter CODE_DATE_FMT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     public List<AiRecord> findAll() {
-        return aiRecordRepository.findAll();
+        return aiRecordRepository.findAllOrderByAiDateDescIdDesc();
     }
 
     public AiRecordDetail getDetail(Integer id) {
@@ -172,9 +172,9 @@ public class AiRecordService {
         PregnancyDiagnosis pd = new PregnancyDiagnosis();
         pd.setAiRecord(saved);
         pd.setAiDate(saved.getAiDate());
-        // Set default PD status (id=3)
+        // Set default PD status (id=1 Pending)
         PdStatus defaultPdStatus = new PdStatus();
-        defaultPdStatus.setId(3);
+        defaultPdStatus.setId(1);
         pd.setPdStatus(defaultPdStatus);
         pregnancyDiagnosisRepository.save(pd);
 

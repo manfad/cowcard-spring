@@ -19,6 +19,7 @@ import cowcard.server.Common.BaseEntity;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+// Lookup IDs: 1=Success, 2=Failed, 3=Pending
 @Entity
 @Table(name = "ai_status")
 public class AiStatus extends BaseEntity implements Serializable {
