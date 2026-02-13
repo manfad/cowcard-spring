@@ -74,7 +74,10 @@ const libraryNav = [
   { title: "PD Statuses", href: "/pd-statuses", icon: Settings },
 ];
 
-const systemNav = [{ title: "Users", href: "/users", icon: Users }];
+const systemNav = [
+  { title: "Users", href: "/users", icon: Users },
+  { title: "System Settings", href: "/system-settings", icon: Settings },
+];
 
 function NavGroup({
   label,

@@ -19,6 +19,7 @@ import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AuthIndexRouteImport } from './routes/_auth/index'
 import { Route as AuthUsersIndexRouteImport } from './routes/_auth/users/index'
 import { Route as AuthTranspondersIndexRouteImport } from './routes/_auth/transponders/index'
+import { Route as AuthSystemSettingsIndexRouteImport } from './routes/_auth/system-settings/index'
 import { Route as AuthSemenIndexRouteImport } from './routes/_auth/semen/index'
 import { Route as AuthPregnancyDiagnosisIndexRouteImport } from './routes/_auth/pregnancy-diagnosis/index'
 import { Route as AuthPdStatusesIndexRouteImport } from './routes/_auth/pd-statuses/index'
@@ -82,6 +83,11 @@ const AuthUsersIndexRoute = AuthUsersIndexRouteImport.update({
 const AuthTranspondersIndexRoute = AuthTranspondersIndexRouteImport.update({
   id: '/transponders/',
   path: '/transponders/',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthSystemSettingsIndexRoute = AuthSystemSettingsIndexRouteImport.update({
+  id: '/system-settings/',
+  path: '/system-settings/',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthSemenIndexRoute = AuthSemenIndexRouteImport.update({
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/pd-statuses/': typeof AuthPdStatusesIndexRoute
   '/pregnancy-diagnosis/': typeof AuthPregnancyDiagnosisIndexRoute
   '/semen/': typeof AuthSemenIndexRoute
+  '/system-settings/': typeof AuthSystemSettingsIndexRoute
   '/transponders/': typeof AuthTranspondersIndexRoute
   '/users/': typeof AuthUsersIndexRoute
 }
@@ -211,6 +218,7 @@ export interface FileRoutesByTo {
   '/pd-statuses': typeof AuthPdStatusesIndexRoute
   '/pregnancy-diagnosis': typeof AuthPregnancyDiagnosisIndexRoute
   '/semen': typeof AuthSemenIndexRoute
+  '/system-settings': typeof AuthSystemSettingsIndexRoute
   '/transponders': typeof AuthTranspondersIndexRoute
   '/users': typeof AuthUsersIndexRoute
 }
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/_auth/pd-statuses/': typeof AuthPdStatusesIndexRoute
   '/_auth/pregnancy-diagnosis/': typeof AuthPregnancyDiagnosisIndexRoute
   '/_auth/semen/': typeof AuthSemenIndexRoute
+  '/_auth/system-settings/': typeof AuthSystemSettingsIndexRoute
   '/_auth/transponders/': typeof AuthTranspondersIndexRoute
   '/_auth/users/': typeof AuthUsersIndexRoute
 }
@@ -267,6 +276,7 @@ export interface FileRouteTypes {
     | '/pd-statuses/'
     | '/pregnancy-diagnosis/'
     | '/semen/'
+    | '/system-settings/'
     | '/transponders/'
     | '/users/'
   fileRoutesByTo: FileRoutesByTo
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/pd-statuses'
     | '/pregnancy-diagnosis'
     | '/semen'
+    | '/system-settings'
     | '/transponders'
     | '/users'
   id:
@@ -320,6 +331,7 @@ export interface FileRouteTypes {
     | '/_auth/pd-statuses/'
     | '/_auth/pregnancy-diagnosis/'
     | '/_auth/semen/'
+    | '/_auth/system-settings/'
     | '/_auth/transponders/'
     | '/_auth/users/'
   fileRoutesById: FileRoutesById
@@ -404,6 +416,13 @@ declare module '@tanstack/react-router' {
       path: '/transponders'
       fullPath: '/transponders/'
       preLoaderRoute: typeof AuthTranspondersIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/system-settings/': {
+      id: '/_auth/system-settings/'
+      path: '/system-settings'
+      fullPath: '/system-settings/'
+      preLoaderRoute: typeof AuthSystemSettingsIndexRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/semen/': {
@@ -531,6 +550,7 @@ interface AuthRouteChildren {
   AuthPdStatusesIndexRoute: typeof AuthPdStatusesIndexRoute
   AuthPregnancyDiagnosisIndexRoute: typeof AuthPregnancyDiagnosisIndexRoute
   AuthSemenIndexRoute: typeof AuthSemenIndexRoute
+  AuthSystemSettingsIndexRoute: typeof AuthSystemSettingsIndexRoute
   AuthTranspondersIndexRoute: typeof AuthTranspondersIndexRoute
   AuthUsersIndexRoute: typeof AuthUsersIndexRoute
 }
@@ -552,6 +572,7 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthPdStatusesIndexRoute: AuthPdStatusesIndexRoute,
   AuthPregnancyDiagnosisIndexRoute: AuthPregnancyDiagnosisIndexRoute,
   AuthSemenIndexRoute: AuthSemenIndexRoute,
+  AuthSystemSettingsIndexRoute: AuthSystemSettingsIndexRoute,
   AuthTranspondersIndexRoute: AuthTranspondersIndexRoute,
   AuthUsersIndexRoute: AuthUsersIndexRoute,
 }

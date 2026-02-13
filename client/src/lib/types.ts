@@ -210,6 +210,20 @@ export interface DamOption {
   currentFeedlot: { id: number; name: string } | null;
 }
 
+// System Settings
+export interface SystemSetting {
+  id: number;
+  name: string;
+  value: string;
+  remark: string | null;
+}
+
+export interface SystemSettingFormData {
+  name: string;
+  value: string;
+  remark: string;
+}
+
 // User
 export interface User {
   id: string;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   useReactTable,
@@ -20,7 +20,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -52,6 +51,8 @@ export function CowMultiSelectDialog({
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   // Track the snapshot of currentCowIds when dialog opened
   const initialCowIdsRef = useRef<Set<number>>(new Set());
+  // Track previous open state to detect open transition without useEffect
+  const wasOpenRef = useRef(false);
 
   const { data: cows = [], isLoading } = useQuery({
     queryKey: ["cows"],
@@ -62,18 +63,16 @@ export function CowMultiSelectDialog({
     enabled: open,
   });
 
-  // Bug fix #2: Use useEffect to properly initialize selectedIds when dialog opens.
-  // The previous approach relied on onOpenChange (which only fires on user-initiated
-  // changes) and a render-time ref check (which can't call setState). This effect
-  // watches the `open` prop directly and initializes state when it becomes true.
-  useEffect(() => {
-    if (open) {
-      const snapshot = new Set(currentCowIds);
-      initialCowIdsRef.current = snapshot;
-      setSelectedIds(new Set(snapshot));
-      setSearch("");
-    }
-  }, [open, currentCowIds]);
+  // Detect closed → open transition and initialize state.
+  // This replaces useEffect([open, currentCowIds]) which caused
+  // re-initialization whenever currentCowIds changed from background refetches.
+  if (open && !wasOpenRef.current) {
+    const snapshot = new Set(currentCowIds);
+    initialCowIdsRef.current = snapshot;
+    setSelectedIds(new Set(snapshot));
+    setSearch("");
+  }
+  wasOpenRef.current = open;
 
   // Use the snapshot for diff comparison, not the live prop
   const currentCowIdSet = initialCowIdsRef.current;
@@ -223,7 +222,7 @@ export function CowMultiSelectDialog({
         if (!isOpen) handleClose();
       }}
     >
-      <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
+      <DialogContent className="max-w-6xl max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Manage Feedlot Cows</DialogTitle>
           <DialogDescription>
@@ -295,9 +294,6 @@ export function CowMultiSelectDialog({
                         onClick={() => handleToggle(cow.id)}
                       >
                         <TableCell className="w-10">
-                          {/* Bug fix #1: stopPropagation prevents the row onClick
-                              from also firing, which caused a double-toggle
-                              (toggle on then immediately off). */}
                           <Checkbox
                             checked={isChecked}
                             onCheckedChange={() => handleToggle(cow.id)}

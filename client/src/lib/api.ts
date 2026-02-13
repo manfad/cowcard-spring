@@ -30,6 +30,8 @@ import type {
   LookupFormData,
   DamOption,
   User,
+  SystemSetting,
+  SystemSettingFormData,
 } from "./types";
 
 const api = axios.create({
@@ -249,6 +251,16 @@ export const pdStatusApi = {
 // Users
 export const userApi = {
   getAll: () => api.get<ServerRes<User[]>>("/user/all"),
+};
+
+// System Settings
+export const systemSettingApi = {
+  getAll: () =>
+    api.get<ServerRes<SystemSetting[]>>("/system-setting/all"),
+  create: (data: SystemSettingFormData) =>
+    api.post<ServerRes<SystemSetting>>("/system-setting", data),
+  update: (id: number, data: SystemSettingFormData) =>
+    api.put<ServerRes<SystemSetting>>(`/system-setting/${id}`, data),
 };
 
 export default api;

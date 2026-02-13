@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   useQuery,
   useMutation,
@@ -47,12 +47,10 @@ import { CowMultiSelectDialog } from "@/components/feedlot/cow-multi-select-dial
 const columnHelper = createColumnHelper<CowView>();
 
 export function FeedlotManagementPage() {
-  const [selectedFeedlotId, setSelectedFeedlotId] = useState<string>("");
+  const [userSelectedId, setUserSelectedId] = useState<string | null>(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [cowSelectOpen, setCowSelectOpen] = useState(false);
   const qc = useQueryClient();
-
-  const feedlotId = selectedFeedlotId ? Number(selectedFeedlotId) : null;
 
   // Fetch all feedlots for dropdown
   const { data: feedlots = [], isLoading: feedlotsLoading } = useQuery({
@@ -63,12 +61,10 @@ export function FeedlotManagementPage() {
     },
   });
 
-  // Auto-select first active feedlot when data loads
-  useEffect(() => {
-    if (!selectedFeedlotId && feedlots.length > 0) {
-      setSelectedFeedlotId(String(feedlots[0].id));
-    }
-  }, [feedlots, selectedFeedlotId]);
+  // Derive the effective feedlot ID: user selection or first available
+  const selectedFeedlotId =
+    userSelectedId ?? (feedlots.length > 0 ? String(feedlots[0].id) : null);
+  const feedlotId = selectedFeedlotId ? Number(selectedFeedlotId) : null;
 
   // Fetch cows for the selected feedlot
   const {
@@ -93,6 +89,7 @@ export function FeedlotManagementPage() {
   const invalidateAll = useCallback(() => {
     qc.invalidateQueries({ queryKey: ["feedlot-with-cows"] });
     qc.invalidateQueries({ queryKey: ["cows"] });
+    qc.invalidateQueries({ queryKey: ["feedlots"] });
   }, [qc]);
 
   // Assign bulk mutation
@@ -227,8 +224,8 @@ export function FeedlotManagementPage() {
       <div className="flex items-center gap-4">
         <div className="w-72">
           <Select
-            value={selectedFeedlotId}
-            onValueChange={setSelectedFeedlotId}
+            value={selectedFeedlotId ?? ""}
+            onValueChange={setUserSelectedId}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a feedlot..." />
