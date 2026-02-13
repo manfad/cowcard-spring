@@ -299,7 +299,7 @@ function PregnancyDiagnosisPage() {
       header: "Progress",
       cell: ({ row }) => {
         const isPending = row.original.pdStatusId === 1;
-        const isPregnant = row.original.pdStatusId === 3;
+        const isPregnant = row.original.pdStatusId === 3 || row.original.pdStatusId === 5;
         const dateVal = isPregnant
           ? row.original.pregnantDate
           : row.original.aiDate;
