@@ -298,6 +298,7 @@ function PregnancyDiagnosisPage() {
       id: "progress",
       header: "Progress",
       cell: ({ row }) => {
+        const isPending = row.original.pdStatusId === 1;
         const isPregnant = row.original.pdStatusId === 3;
         const dateVal = isPregnant
           ? row.original.pregnantDate
@@ -308,7 +309,11 @@ function PregnancyDiagnosisPage() {
         const pct = Math.min(Math.round((days / totalDays) * 100), 100);
         return (
           <div className="min-w-24">
-            <Progress value={pct} className="h-2" />
+            <Progress
+              value={pct}
+              className="h-2"
+              indicatorClassName={isPending ? "bg-yellow-500" : undefined}
+            />
             <span className="text-xs text-muted-foreground">
               {days}/{totalDays} days
             </span>
@@ -325,14 +330,14 @@ function PregnancyDiagnosisPage() {
       header: "PD Status",
       cell: ({ row }) => {
         const { pdStatusId, pdStatusName, pdStatusColor } = row.original;
-        const isDisabled = pdStatusId === 2 || pdStatusId === 3 || pdStatusId === 4;
+        const isEnabled = pdStatusId === 1 || pdStatusId === 5;
         const colorClass = pdStatusColor ? colorBtnMap[pdStatusColor] : "";
         return (
           <Button
             size="sm"
             variant={pdStatusColor ? "default" : "outline"}
             className={"h-auto px-2 py-1 " + colorClass}
-            disabled={isDisabled}
+            disabled={!isEnabled}
             onClick={() => handleStatusButtonClick(row.original)}
           >
             {pdStatusName ?? "-"}

@@ -16,4 +16,7 @@ public interface PregnancyDiagnosisRepository extends JpaRepository<PregnancyDia
     List<PregnancyDiagnosis> findByDiagnosisById(Integer inseminatorId);
 
     Optional<PregnancyDiagnosis> findByAiRecordId(Integer aiRecordId);
+
+    @Query("SELECT pd FROM PregnancyDiagnosis pd WHERE pd.pdStatus.id = :pdStatusId")
+    List<PregnancyDiagnosis> findByPdStatusId(Integer pdStatusId);
 }

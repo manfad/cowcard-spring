@@ -127,13 +127,16 @@ public class AiRecordService {
         aiRecord.setStatus(aiStatus);
         aiRecordRepository.save(aiRecord);
 
-        // If fail (id=2), cascade to pregnancy diagnosis
+        // If fail (id=2), cascade to PD only if PD is currently NEW (7) or Pending (1)
         if (aiStatusId == 2) {
             pregnancyDiagnosisRepository.findByAiRecordId(id).ifPresent(pd -> {
-                PdStatus pdStatus = new PdStatus();
-                pdStatus.setId(2);
-                pd.setPdStatus(pdStatus);
-                pregnancyDiagnosisRepository.save(pd);
+                Integer currentPdStatusId = pd.getPdStatus() != null ? pd.getPdStatus().getId() : null;
+                if (currentPdStatusId != null && (currentPdStatusId == 7 || currentPdStatusId == 1)) {
+                    PdStatus pdStatus = new PdStatus();
+                    pdStatus.setId(2);
+                    pd.setPdStatus(pdStatus);
+                    pregnancyDiagnosisRepository.save(pd);
+                }
             });
         }
 
@@ -172,9 +175,9 @@ public class AiRecordService {
         PregnancyDiagnosis pd = new PregnancyDiagnosis();
         pd.setAiRecord(saved);
         pd.setAiDate(saved.getAiDate());
-        // Set default PD status (id=1 Pending)
+        // Set default PD status (id=7 NEW)
         PdStatus defaultPdStatus = new PdStatus();
-        defaultPdStatus.setId(1);
+        defaultPdStatus.setId(7);
         pd.setPdStatus(defaultPdStatus);
         pregnancyDiagnosisRepository.save(pd);
 

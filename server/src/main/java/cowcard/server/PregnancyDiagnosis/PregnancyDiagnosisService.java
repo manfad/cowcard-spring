@@ -32,9 +32,6 @@ public class PregnancyDiagnosisService {
     @Autowired
     private CalfRecordRepository calfRecordRepository;
 
-    @Autowired
-    private AiRecordRepository aiRecordRepository;
-
     public List<PregnancyDiagnosisView> findAll() {
         return pregnancyDiagnosisRepository.findAllOrderByAiRecordAiDateDescIdDesc()
                 .stream().map(PregnancyDiagnosisView::from).toList();
