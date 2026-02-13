@@ -31,6 +31,11 @@ public class CowGenderController {
         return ServerRes.success(cowGenderService.findAllActive());
     }
 
+    @GetMapping("/{id}/detail")
+    public ServerRes<GenderWithCows> getWithCows(@PathVariable Integer id) {
+        return ServerRes.success(cowGenderService.getWithCows(id));
+    }
+
     @PutMapping("/toggle-active/{id}")
     public ServerRes<CowGender> toggleActive(@PathVariable Integer id) {
         return ServerRes.success(cowGenderService.toggleActive(id));

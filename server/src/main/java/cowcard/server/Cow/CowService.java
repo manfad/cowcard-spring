@@ -15,6 +15,9 @@ import cowcard.server.CowRole.CowRole;
 import cowcard.server.CowRole.CowRoleRepository;
 import cowcard.server.CowStatus.CowStatus;
 import cowcard.server.CowStatus.CowStatusRepository;
+import cowcard.server.AiRecord.AiRecordRepository;
+import cowcard.server.CowFeedlotHistory.CowFeedlotHistoryRepository;
+import cowcard.server.CowTransponderHistory.CowTransponderHistoryRepository;
 import cowcard.server.Semen.Semen;
 import cowcard.server.Semen.SemenRepository;
 
@@ -39,16 +42,38 @@ public class CowService {
     @Autowired
     private SemenRepository semenRepository;
 
+    @Autowired
+    private CowTransponderHistoryRepository cowTransponderHistoryRepository;
+
+    @Autowired
+    private CowFeedlotHistoryRepository cowFeedlotHistoryRepository;
+
+    @Autowired
+    private AiRecordRepository aiRecordRepository;
+
     public List<Cow> findAll() {
         return cowRepository.findAll();
     }
 
     public List<CowView> findAllView() {
-        return cowRepository.findAll().stream().map(CowView::from).toList();
+        return cowRepository.findAllOrderByTag().stream().map(CowView::from).toList();
+    }
+
+    public CowDetail getDetail(Integer id) {
+        Cow cow = cowRepository.findById(id).orElseThrow();
+        List<CowTransponderHistoryItem> transponderHistory = cowTransponderHistoryRepository
+                .findByCow_IdOrderByAssignedAtDesc(id).stream().map(CowTransponderHistoryItem::from).toList();
+        List<CowFeedlotHistoryItem> feedlotHistory = cowFeedlotHistoryRepository
+                .findByCow_IdOrderByMovedInAtDesc(id).stream().map(CowFeedlotHistoryItem::from).toList();
+        List<CowAiRecordItem> aiRecords = aiRecordRepository
+                .findByDamId(id).stream().map(CowAiRecordItem::from).toList();
+        List<CowCalfItem> calves = cowRepository
+                .findByDamId(id).stream().map(CowCalfItem::from).toList();
+        return CowDetail.from(cow, transponderHistory, feedlotHistory, aiRecords, calves);
     }
 
     public List<CowView> findAllActiveView() {
-        return cowRepository.findByActiveTrue().stream().map(CowView::from).toList();
+        return cowRepository.findAllActiveOrderByTag().stream().map(CowView::from).toList();
     }
 
     public Cow createDam(String tag, Integer statusId, String remark) {

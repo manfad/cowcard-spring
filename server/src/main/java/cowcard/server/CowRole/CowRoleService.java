@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cowcard.server.Cow.CowRepository;
 import cowcard.server.CowGender.CowGender;
 import cowcard.server.CowGender.CowGenderRepository;
 
@@ -13,6 +14,9 @@ public class CowRoleService {
 
     @Autowired
     private CowRoleRepository cowRoleRepository;
+
+    @Autowired
+    private CowRepository cowRepository;
 
     @Autowired
     private CowGenderRepository cowGenderRepository;
@@ -29,6 +33,13 @@ public class CowRoleService {
         CowRole e = cowRoleRepository.findById(id).orElseThrow();
         e.setActive(e.getActive() == null || !e.getActive());
         return cowRoleRepository.save(e);
+    }
+
+    public RoleWithCows getWithCows(Integer id) {
+        CowRole role = cowRoleRepository.findById(id).orElseThrow();
+        List<RoleCowSummary> cows = cowRepository.findByRoleId(id).stream()
+                .map(RoleCowSummary::from).toList();
+        return RoleWithCows.from(role, cows);
     }
 
     public CowRole create(CowRole cowRole, List<Integer> cowGenderIds) {

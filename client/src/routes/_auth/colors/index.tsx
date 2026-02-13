@@ -22,6 +22,7 @@ function ColorsPage() {
       updateFn={(id, data) => colorApi.update(id, data)}
       entityLabel="Color"
       emptyMessage="No colors found."
+      detailPath="/colors"
     />
   );
 }

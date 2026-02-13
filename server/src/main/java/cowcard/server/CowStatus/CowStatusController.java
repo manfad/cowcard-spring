@@ -31,6 +31,11 @@ public class CowStatusController {
         return ServerRes.success(cowStatusService.findAllActive());
     }
 
+    @GetMapping("/{id}/detail")
+    public ServerRes<StatusWithCows> getWithCows(@PathVariable Integer id) {
+        return ServerRes.success(cowStatusService.getWithCows(id));
+    }
+
     @PutMapping("/toggle-active/{id}")
     public ServerRes<CowStatus> toggleActive(@PathVariable Integer id) {
         return ServerRes.success(cowStatusService.toggleActive(id));

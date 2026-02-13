@@ -22,6 +22,7 @@ function CowGendersPage() {
       updateFn={(id, data) => cowGenderApi.update(id, data)}
       entityLabel="Cow Gender"
       emptyMessage="No cow genders found."
+      detailPath="/cow-genders"
     />
   );
 }

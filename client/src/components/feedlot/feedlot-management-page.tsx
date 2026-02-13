@@ -10,8 +10,10 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   flexRender,
   createColumnHelper,
+  type SortingState,
 } from "@tanstack/react-table";
 import { X, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -49,6 +51,7 @@ const columnHelper = createColumnHelper<CowView>();
 export function FeedlotManagementPage() {
   const [userSelectedId, setUserSelectedId] = useState<string | null>(null);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [cowSelectOpen, setCowSelectOpen] = useState(false);
   const qc = useQueryClient();
 
@@ -206,8 +209,10 @@ export function FeedlotManagementPage() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: { globalFilter },
+    state: { sorting, globalFilter },
+    onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     initialState: { pagination: { pageSize: 10 } },
   });
@@ -292,13 +297,20 @@ export function FeedlotManagementPage() {
                       {table.getHeaderGroups().map((hg) => (
                         <TableRow key={hg.id}>
                           {hg.headers.map((h) => (
-                            <TableHead key={h.id}>
-                              {h.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    h.column.columnDef.header,
-                                    h.getContext(),
-                                  )}
+                            <TableHead
+                              key={h.id}
+                              className={h.column.getCanSort() ? "cursor-pointer select-none" : ""}
+                              onClick={h.column.getToggleSortingHandler()}
+                            >
+                              <div className="flex items-center gap-1">
+                                {h.isPlaceholder
+                                  ? null
+                                  : flexRender(
+                                      h.column.columnDef.header,
+                                      h.getContext(),
+                                    )}
+                                {{ asc: " ↑", desc: " ↓" }[h.column.getIsSorted() as string] ?? null}
+                              </div>
                             </TableHead>
                           ))}
                         </TableRow>

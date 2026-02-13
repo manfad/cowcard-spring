@@ -217,6 +217,117 @@ export interface DamAiOverview {
   aiRecords: AiRecordSummary[];
 }
 
+// Detail page types
+export interface ColorDetail {
+  id: number;
+  name: string;
+  remark: string | null;
+  active: boolean | null;
+  cows: { id: number; tag: string; gender: string; role: string; status: string }[];
+}
+
+export interface InseminatorDetail {
+  id: number;
+  name: string;
+  remark: string | null;
+  active: boolean | null;
+  aiByRecords: { id: number; code: string; aiDate: string; damTag: string; semenName: string }[];
+  preparedByRecords: { id: number; code: string; aiDate: string; damTag: string; semenName: string }[];
+  diagnosisByRecords: { id: number; aiDate: string; aiRecordCode: string; pdStatus: string }[];
+}
+
+export interface GenderDetail {
+  id: number;
+  name: string;
+  remark: string | null;
+  active: boolean | null;
+  cows: { id: number; tag: string; role: string; feedlot: string }[];
+}
+
+export interface RoleDetail {
+  id: number;
+  name: string;
+  remark: string | null;
+  active: boolean | null;
+  cows: { id: number; tag: string; feedlot: string }[];
+}
+
+export interface StatusDetail {
+  id: number;
+  name: string;
+  remark: string | null;
+  active: boolean | null;
+  cows: { id: number; tag: string; role: string; feedlot: string }[];
+}
+
+export interface FeedlotDetail {
+  id: number;
+  name: string;
+  remark: string | null;
+  active: boolean | null;
+  cows: { id: number; tag: string; role: string }[];
+  history: { id: number; cowTag: string; movedInAt: string; movedOutAt: string | null }[];
+}
+
+export interface TransponderDetail {
+  id: number;
+  code: string;
+  remark: string | null;
+  currentCow: { id: number; tag: string } | null;
+  history: { id: number; cowTag: string; assignedAt: string; unassignedAt: string | null }[];
+}
+
+export interface AiRecordDetail {
+  id: number;
+  code: string;
+  aiDate: string | null;
+  aiTime: string | null;
+  date: string | null;
+  remark: string | null;
+  feedlot: string | null;
+  damTag: string | null;
+  damId: number | null;
+  semenName: string | null;
+  semenId: number | null;
+  aiBy: string | null;
+  preparedBy: string | null;
+  status: string | null;
+  pregnancyDiagnosis: { id: number; aiDate: string; diagnosisBy: string | null; pdStatus: string | null } | null;
+  calfRecord: { id: number; cowTag: string | null; cowId: number | null } | null;
+}
+
+export interface SemenDetail {
+  id: number;
+  name: string;
+  sire: string | null;
+  date: string;
+  straw: number | null;
+  bull: boolean | null;
+  remark: string | null;
+  aiRecords: { id: number; code: string; aiDate: string; damTag: string; aiBy: string }[];
+  cows: { id: number; tag: string; gender: string; role: string; feedlot: string }[];
+}
+
+export interface CowDetail {
+  id: number;
+  tag: string;
+  dob: string | null;
+  weight: number | null;
+  remark: string | null;
+  gender: string | null;
+  color: string | null;
+  role: string | null;
+  status: string | null;
+  feedlot: string | null;
+  transponder: string | null;
+  damTag: string | null;
+  semenName: string | null;
+  transponderHistory: { id: number; transponderCode: string; assignedAt: string; unassignedAt: string | null }[];
+  feedlotHistory: { id: number; feedlotName: string; movedInAt: string; movedOutAt: string | null }[];
+  aiRecords: { id: number; code: string; aiDate: string; aiTime: string; semenName: string; aiBy: string; preparedBy: string; feedlot: string; status: string }[];
+  calves: { id: number; tag: string; dob: string; gender: string; color: string }[];
+}
+
 // Form types
 export interface DamOption {
   id: number;

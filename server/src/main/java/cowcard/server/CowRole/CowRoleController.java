@@ -31,6 +31,11 @@ public class CowRoleController {
         return ServerRes.success(cowRoleService.findAllActive());
     }
 
+    @GetMapping("/{id}/detail")
+    public ServerRes<RoleWithCows> getWithCows(@PathVariable Integer id) {
+        return ServerRes.success(cowRoleService.getWithCows(id));
+    }
+
     @PutMapping("/toggle-active/{id}")
     public ServerRes<CowRole> toggleActive(@PathVariable Integer id) {
         return ServerRes.success(cowRoleService.toggleActive(id));

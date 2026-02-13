@@ -5,11 +5,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cowcard.server.AiRecord.AiRecordRepository;
+import cowcard.server.Cow.CowRepository;
+
 @Service
 public class SemenService {
 
     @Autowired
     private SemenRepository semenRepository;
+
+    @Autowired
+    private AiRecordRepository aiRecordRepository;
+
+    @Autowired
+    private CowRepository cowRepository;
 
     public List<Semen> findAll() {
         return semenRepository.findAll();
@@ -34,6 +43,15 @@ public class SemenService {
         Semen e = semenRepository.findById(id).orElseThrow();
         e.setBull(e.getBull() == null || !e.getBull());
         return semenRepository.save(e);
+    }
+
+    public SemenDetail getDetail(Integer id) {
+        Semen semen = semenRepository.findById(id).orElseThrow();
+        List<SemenAiRecordItem> aiRecords = aiRecordRepository
+                .findBySemenId(id).stream().map(SemenAiRecordItem::from).toList();
+        List<SemenCowItem> cows = cowRepository
+                .findBySemenId(id).stream().map(SemenCowItem::from).toList();
+        return SemenDetail.from(semen, aiRecords, cows);
     }
 
     public void deductStraw(Integer semenId) {

@@ -32,6 +32,11 @@ public class AiRecordController {
             String remark) {
     }
 
+    @GetMapping("/{id}/detail")
+    public ServerRes<AiRecordDetail> getDetail(@PathVariable Integer id) {
+        return ServerRes.success(aiRecordService.getDetail(id));
+    }
+
     @GetMapping("/all")
     public ServerRes<List<AiRecord>> getAll() {
         return ServerRes.success(aiRecordService.findAll());

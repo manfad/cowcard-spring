@@ -5,10 +5,13 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   flexRender,
   createColumnHelper,
+  type SortingState,
 } from "@tanstack/react-table";
-import { Pencil } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Pencil, Eye } from "lucide-react";
 import { toast } from "sonner";
 import type { LookupEntity, LookupFormData } from "@/lib/types";
 import { useAuth } from "@/lib/auth";
@@ -43,6 +46,7 @@ interface LookupPageProps {
   createFn: (data: LookupFormData) => Promise<unknown>;
   updateFn: (id: number, data: LookupFormData) => Promise<unknown>;
   emptyMessage: string;
+  detailPath?: string;
 }
 
 const columnHelper = createColumnHelper<LookupEntity>();
@@ -58,8 +62,10 @@ export function LookupPage({
   createFn,
   updateFn,
   emptyMessage,
+  detailPath,
 }: LookupPageProps) {
   const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEntity, setEditingEntity] = useState<LookupEntity | null>(null);
   const { user } = useAuth();
@@ -120,7 +126,23 @@ export function LookupPage({
       header: "No",
       cell: (info) => info.row.index + 1,
     }),
-    columnHelper.accessor("name", { header: "Name" }),
+    columnHelper.accessor("name", {
+      header: "Name",
+      cell: (info) => {
+        const name = info.getValue();
+        if (detailPath) {
+          return (
+            <Link
+              to={`${detailPath}/${info.row.original.id}`}
+              className="font-medium text-primary hover:underline"
+            >
+              {name}
+            </Link>
+          );
+        }
+        return name;
+      },
+    }),
     columnHelper.accessor("remark", {
       header: "Remarks",
       cell: (info) => info.getValue() || "-",
@@ -144,14 +166,23 @@ export function LookupPage({
       id: "actions",
       header: "Actions",
       cell: (info) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => handleEdit(info.row.original)}
-        >
-          <Pencil className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          {detailPath && (
+            <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+              <Link to={`${detailPath}/${info.row.original.id}`}>
+                <Eye className="h-4 w-4" />
+              </Link>
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => handleEdit(info.row.original)}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        </div>
       ),
     }),
   ];
@@ -161,8 +192,10 @@ export function LookupPage({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: { globalFilter },
+    state: { sorting, globalFilter },
+    onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     initialState: { pagination: { pageSize: 10 } },
   });
@@ -196,13 +229,20 @@ export function LookupPage({
                 {table.getHeaderGroups().map((hg) => (
                   <TableRow key={hg.id}>
                     {hg.headers.map((h) => (
-                      <TableHead key={h.id}>
-                        {h.isPlaceholder
-                          ? null
-                          : flexRender(
-                              h.column.columnDef.header,
-                              h.getContext(),
-                            )}
+                      <TableHead
+                        key={h.id}
+                        className={h.column.getCanSort() ? "cursor-pointer select-none" : ""}
+                        onClick={h.column.getToggleSortingHandler()}
+                      >
+                        <div className="flex items-center gap-1">
+                          {h.isPlaceholder
+                            ? null
+                            : flexRender(
+                                h.column.columnDef.header,
+                                h.getContext(),
+                              )}
+                          {{ asc: " ↑", desc: " ↓" }[h.column.getIsSorted() as string] ?? null}
+                        </div>
                       </TableHead>
                     ))}
                   </TableRow>

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cowcard.server.CalfRecord.CalfRecordRepository;
 import cowcard.server.Cow.Cow;
 import cowcard.server.Cow.CowRepository;
 import cowcard.server.PregnancyDiagnosis.PregnancyDiagnosis;
@@ -33,12 +34,24 @@ public class AiRecordService {
     private SemenRepository semenRepository;
 
     @Autowired
+    private CalfRecordRepository calfRecordRepository;
+
+    @Autowired
     private SemenService semenService;
 
     private static final DateTimeFormatter CODE_DATE_FMT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     public List<AiRecord> findAll() {
         return aiRecordRepository.findAll();
+    }
+
+    public AiRecordDetail getDetail(Integer id) {
+        AiRecord aiRecord = aiRecordRepository.findById(id).orElseThrow();
+        PregnancyDiagnosisItem pdItem = pregnancyDiagnosisRepository
+                .findByAiRecordId(id).map(PregnancyDiagnosisItem::from).orElse(null);
+        CalfRecordItem calfItem = calfRecordRepository
+                .findByAiRecordId(id).map(CalfRecordItem::from).orElse(null);
+        return AiRecordDetail.from(aiRecord, pdItem, calfItem);
     }
 
     public long countNonBullAiRecords(Integer damId) {

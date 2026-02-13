@@ -22,6 +22,7 @@ function InseminatorsPage() {
       updateFn={(id, data) => inseminatorApi.update(id, data)}
       entityLabel="Inseminator"
       emptyMessage="No inseminators found."
+      detailPath="/inseminators"
     />
   );
 }

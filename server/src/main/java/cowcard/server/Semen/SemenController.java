@@ -21,6 +21,11 @@ public class SemenController {
     @Autowired
     private SemenService semenService;
 
+    @GetMapping("/{id}/detail")
+    public ServerRes<SemenDetail> getDetail(@PathVariable Integer id) {
+        return ServerRes.success(semenService.getDetail(id));
+    }
+
     @GetMapping("/all")
     public ServerRes<List<Semen>> getAll() {
         return ServerRes.success(semenService.findAll());

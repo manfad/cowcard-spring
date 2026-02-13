@@ -31,6 +31,11 @@ public class ColorController {
         return ServerRes.success(colorService.findAllActive());
     }
 
+    @GetMapping("/{id}/detail")
+    public ServerRes<ColorWithCows> getWithCows(@PathVariable Integer id) {
+        return ServerRes.success(colorService.getWithCows(id));
+    }
+
     @PutMapping("/toggle-active/{id}")
     public ServerRes<Color> toggleActive(@PathVariable Integer id) {
         return ServerRes.success(colorService.toggleActive(id));

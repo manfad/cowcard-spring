@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,10 +9,12 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   flexRender,
   createColumnHelper,
+  type SortingState,
 } from "@tanstack/react-table";
-import { Pencil } from "lucide-react";
+import { Pencil, Eye } from "lucide-react";
 import { toast } from "sonner";
 import type { CowRole, CowRoleFormData } from "@/lib/types";
 import { cowRoleApi, cowGenderApi } from "@/lib/api";
@@ -69,6 +71,7 @@ const columnHelper = createColumnHelper<CowRole>();
 
 function CowRolesPage() {
   const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEntity, setEditingEntity] = useState<CowRole | null>(null);
   const { user } = useAuth();
@@ -167,7 +170,17 @@ function CowRolesPage() {
       header: "#",
       cell: ({ row }) => row.index + 1,
     }),
-    columnHelper.accessor("name", { header: "Name" }),
+    columnHelper.accessor("name", {
+      header: "Name",
+      cell: (info) => (
+        <Link
+          to={`/cow-roles/${info.row.original.id}`}
+          className="font-medium text-primary hover:underline"
+        >
+          {info.getValue()}
+        </Link>
+      ),
+    }),
     columnHelper.accessor("cowGenders", {
       header: "Genders",
       cell: (info) => {
@@ -199,14 +212,21 @@ function CowRolesPage() {
       id: "actions",
       header: "Actions",
       cell: (info) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => handleEdit(info.row.original)}
-        >
-          <Pencil className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+            <Link to={`/cow-roles/${info.row.original.id}`}>
+              <Eye className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => handleEdit(info.row.original)}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        </div>
       ),
     }),
   ];
@@ -216,8 +236,10 @@ function CowRolesPage() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: { globalFilter },
+    state: { sorting, globalFilter },
+    onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     initialState: { pagination: { pageSize: 10 } },
   });
@@ -254,13 +276,20 @@ function CowRolesPage() {
                 {table.getHeaderGroups().map((hg) => (
                   <TableRow key={hg.id}>
                     {hg.headers.map((h) => (
-                      <TableHead key={h.id}>
-                        {h.isPlaceholder
-                          ? null
-                          : flexRender(
-                              h.column.columnDef.header,
-                              h.getContext(),
-                            )}
+                      <TableHead
+                        key={h.id}
+                        className={h.column.getCanSort() ? "cursor-pointer select-none" : ""}
+                        onClick={h.column.getToggleSortingHandler()}
+                      >
+                        <div className="flex items-center gap-1">
+                          {h.isPlaceholder
+                            ? null
+                            : flexRender(
+                                h.column.columnDef.header,
+                                h.getContext(),
+                              )}
+                          {{ asc: " ↑", desc: " ↓" }[h.column.getIsSorted() as string] ?? null}
+                        </div>
                       </TableHead>
                     ))}
                   </TableRow>

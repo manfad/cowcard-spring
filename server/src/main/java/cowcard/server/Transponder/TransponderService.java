@@ -27,6 +27,16 @@ public class TransponderService {
     @Autowired
     private CowTransponderHistoryRepository cowTransponderHistoryRepository;
 
+    public TransponderDetail getDetail(Integer id) {
+        Transponder t = transponderRepository.findById(id).orElseThrow();
+        TransponderCurrentCow currentCow = t.getCurrentCow() != null
+                ? TransponderCurrentCow.from(t.getCurrentCow()) : null;
+        List<TransponderHistorySummary> history = cowTransponderHistoryRepository
+                .findByTransponder_IdOrderByAssignedAtDesc(id).stream()
+                .map(TransponderHistorySummary::from).toList();
+        return TransponderDetail.from(t, currentCow, history);
+    }
+
     public List<Transponder> findAll() {
         return transponderRepository.findAll();
     }

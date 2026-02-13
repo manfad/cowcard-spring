@@ -33,6 +33,16 @@ import type {
   User,
   SystemSetting,
   SystemSettingFormData,
+  ColorDetail,
+  InseminatorDetail,
+  GenderDetail,
+  RoleDetail,
+  StatusDetail,
+  FeedlotDetail,
+  TransponderDetail,
+  CowDetail,
+  SemenDetail,
+  AiRecordDetail,
 } from "./types";
 
 const api = axios.create({
@@ -52,6 +62,8 @@ export const authApi = {
 // Main entities
 export const cowApi = {
   getAll: () => api.get<ServerRes<CowView[]>>("/cow/all"),
+  getDetail: (id: number) =>
+    api.get<ServerRes<CowDetail>>(`/cow/${id}/detail`),
 };
 
 // Public form endpoints (no auth required)
@@ -93,6 +105,8 @@ export const formApi = {
 
 export const feedlotApi = {
   getAll: () => api.get<ServerRes<Feedlot[]>>("/feedlot/all"),
+  getDetail: (id: number) =>
+    api.get<ServerRes<FeedlotDetail>>(`/feedlot/${id}/detail`),
   getWithCows: (id: number) =>
     api.get<ServerRes<FeedlotWithCows>>(`/feedlot/${id}/with-cows`),
   assignBulk: (feedlotId: number, cowIds: number[]) =>
@@ -112,6 +126,8 @@ export const feedlotApi = {
 
 export const inseminatorApi = {
   getAll: () => api.get<ServerRes<Inseminator[]>>("/inseminator/all"),
+  getDetail: (id: number) =>
+    api.get<ServerRes<InseminatorDetail>>(`/inseminator/${id}/detail`),
   toggleActive: (id: number) =>
     api.put<ServerRes<Inseminator>>(`/inseminator/toggle-active/${id}`),
   create: (data: LookupFormData) =>
@@ -122,6 +138,8 @@ export const inseminatorApi = {
 
 export const semenApi = {
   getAll: () => api.get<ServerRes<Semen[]>>("/semen/all"),
+  getDetail: (id: number) =>
+    api.get<ServerRes<SemenDetail>>(`/semen/${id}/detail`),
   create: (data: SemenFormData) =>
     api.post<ServerRes<Semen>>("/semen", data),
   update: (id: number, data: SemenFormData) =>
@@ -132,6 +150,8 @@ export const semenApi = {
 
 export const transponderApi = {
   getAll: () => api.get<ServerRes<Transponder[]>>("/transponder/all"),
+  getDetail: (id: number) =>
+    api.get<ServerRes<TransponderDetail>>(`/transponder/${id}/detail`),
   create: (data: { code: string; remark: string }) =>
     api.post<ServerRes<Transponder>>("/transponder", data),
   update: (id: number, data: { code: string; remark: string }) =>
@@ -147,6 +167,8 @@ export const transponderApi = {
 // Record entities
 export const aiRecordApi = {
   getAll: () => api.get<ServerRes<AiRecord[]>>("/ai-record/all"),
+  getDetail: (id: number) =>
+    api.get<ServerRes<AiRecordDetail>>(`/ai-record/${id}/detail`),
   create: (data: AiRecordFormData) =>
     api.post<ServerRes<AiRecord>>("/ai-record", data),
   getNextCode: () => api.get<ServerRes<string>>("/ai-record/next-code"),
@@ -205,6 +227,8 @@ export const calfStatusApi = {
 
 export const colorApi = {
   getAll: () => api.get<ServerRes<Color[]>>("/color/all"),
+  getDetail: (id: number) =>
+    api.get<ServerRes<ColorDetail>>(`/color/${id}/detail`),
   toggleActive: (id: number) =>
     api.put<ServerRes<Color>>(`/color/toggle-active/${id}`),
   create: (data: LookupFormData) =>
@@ -215,6 +239,8 @@ export const colorApi = {
 
 export const cowGenderApi = {
   getAll: () => api.get<ServerRes<CowGender[]>>("/cow-gender/all"),
+  getDetail: (id: number) =>
+    api.get<ServerRes<GenderDetail>>(`/cow-gender/${id}/detail`),
   toggleActive: (id: number) =>
     api.put<ServerRes<CowGender>>(`/cow-gender/toggle-active/${id}`),
   create: (data: LookupFormData) =>
@@ -225,6 +251,8 @@ export const cowGenderApi = {
 
 export const cowRoleApi = {
   getAll: () => api.get<ServerRes<CowRole[]>>("/cow-role/all"),
+  getDetail: (id: number) =>
+    api.get<ServerRes<RoleDetail>>(`/cow-role/${id}/detail`),
   toggleActive: (id: number) =>
     api.put<ServerRes<CowRole>>(`/cow-role/toggle-active/${id}`),
   create: (data: CowRoleFormData) =>
@@ -235,6 +263,8 @@ export const cowRoleApi = {
 
 export const cowStatusApi = {
   getAll: () => api.get<ServerRes<CowStatus[]>>("/cow-status/all"),
+  getDetail: (id: number) =>
+    api.get<ServerRes<StatusDetail>>(`/cow-status/${id}/detail`),
   toggleActive: (id: number) =>
     api.put<ServerRes<CowStatus>>(`/cow-status/toggle-active/${id}`),
   create: (data: LookupFormData) =>

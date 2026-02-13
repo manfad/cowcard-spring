@@ -31,6 +31,11 @@ public class FeedlotController {
         return ServerRes.success(feedlotService.findAllActiveDto());
     }
 
+    @GetMapping("/{id}/detail")
+    public ServerRes<FeedlotDetail> getDetail(@PathVariable Integer id) {
+        return ServerRes.success(feedlotService.getDetail(id));
+    }
+
     @PutMapping("/toggle-active/{id}")
     public ServerRes<Feedlot> toggleActive(@PathVariable Integer id) {
         return ServerRes.success(feedlotService.toggleActive(id));

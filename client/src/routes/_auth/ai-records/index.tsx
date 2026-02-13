@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   flexRender,
   createColumnHelper,
+  type SortingState,
 } from "@tanstack/react-table";
+import { Eye } from "lucide-react";
 import { aiRecordApi } from "@/lib/api";
 import type { AiRecord } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -37,6 +40,7 @@ const columnHelper = createColumnHelper<AiRecord>();
 
 function AiRecordsPage() {
   const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const { data: records = [], isLoading } = useQuery({
     queryKey: ["ai-records"],
@@ -54,7 +58,18 @@ function AiRecordsPage() {
     }),
     columnHelper.accessor("code", {
       header: "Code",
-      cell: (info) => info.getValue() ?? "-",
+      cell: (info) => {
+        const code = info.getValue();
+        if (!code) return "-";
+        return (
+          <Link
+            to={`/ai-records/${info.row.original.id}`}
+            className="font-medium text-primary hover:underline"
+          >
+            {code}
+          </Link>
+        );
+      },
     }),
     columnHelper.accessor("dam", {
       header: "Dam",
@@ -91,6 +106,17 @@ function AiRecordsPage() {
       header: "Status",
       cell: (info) => info.getValue()?.name ?? "-",
     }),
+    columnHelper.display({
+      id: "actions",
+      header: "Actions",
+      cell: (info) => (
+        <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+          <Link to={`/ai-records/${info.row.original.id}`}>
+            <Eye className="h-4 w-4" />
+          </Link>
+        </Button>
+      ),
+    }),
   ];
 
   const table = useReactTable({
@@ -98,8 +124,10 @@ function AiRecordsPage() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: { globalFilter },
+    state: { sorting, globalFilter },
+    onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     initialState: { pagination: { pageSize: 10 } },
   });
@@ -137,13 +165,20 @@ function AiRecordsPage() {
                 {table.getHeaderGroups().map((hg) => (
                   <TableRow key={hg.id}>
                     {hg.headers.map((h) => (
-                      <TableHead key={h.id}>
-                        {h.isPlaceholder
-                          ? null
-                          : flexRender(
-                              h.column.columnDef.header,
-                              h.getContext(),
-                            )}
+                      <TableHead
+                        key={h.id}
+                        className={h.column.getCanSort() ? "cursor-pointer select-none" : ""}
+                        onClick={h.column.getToggleSortingHandler()}
+                      >
+                        <div className="flex items-center gap-1">
+                          {h.isPlaceholder
+                            ? null
+                            : flexRender(
+                                h.column.columnDef.header,
+                                h.getContext(),
+                              )}
+                          {{ asc: " ↑", desc: " ↓" }[h.column.getIsSorted() as string] ?? null}
+                        </div>
                       </TableHead>
                     ))}
                   </TableRow>

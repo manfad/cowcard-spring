@@ -5,11 +5,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cowcard.server.Cow.CowRepository;
+
 @Service
 public class ColorService {
 
     @Autowired
     private ColorRepository colorRepository;
+
+    @Autowired
+    private CowRepository cowRepository;
 
     public List<Color> findAll() {
         return colorRepository.findAll();
@@ -28,6 +33,14 @@ public class ColorService {
     public Color create(Color color) {
         color.setActive(true);
         return colorRepository.save(color);
+    }
+
+    public ColorWithCows getWithCows(Integer id) {
+        Color color = colorRepository.findById(id).orElseThrow();
+        List<CowSummary> cows = cowRepository.findByColorId(id).stream()
+                .map(CowSummary::from)
+                .toList();
+        return ColorWithCows.from(color, cows);
     }
 
     public Color update(Integer id, Color color) {

@@ -1,14 +1,17 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   flexRender,
   createColumnHelper,
+  type SortingState,
 } from "@tanstack/react-table";
-import { MoreHorizontal, Pencil, Eye, Plus } from "lucide-react";
+import { Eye, Plus } from "lucide-react";
 import type { CowView } from "@/lib/types";
 import { cowApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -29,12 +32,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const columnHelper = createColumnHelper<CowView>();
 
@@ -47,7 +44,12 @@ const columns = [
   columnHelper.accessor("tag", {
     header: "Tag",
     cell: (info) => (
-      <span className="font-medium">{info.getValue()}</span>
+      <Link
+        to={`/cows/${info.row.original.id}`}
+        className="font-medium text-primary hover:underline"
+      >
+        {info.getValue()}
+      </Link>
     ),
   }),
   columnHelper.accessor("gender", {
@@ -92,30 +94,21 @@ const columns = [
   columnHelper.display({
     id: "actions",
     header: "Actions",
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem>
-            <Eye className="mr-2 h-4 w-4" />
-            View
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+    cell: (info) => (
+      <div className="flex items-center gap-1">
+        <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+          <Link to={`/cows/${info.row.original.id}`}>
+            <Eye className="h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
     ),
   }),
 ];
 
 export function CowPage() {
   const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const { data: cows = [], isLoading } = useQuery({
     queryKey: ["cows"],
@@ -130,8 +123,10 @@ export function CowPage() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: { globalFilter },
+    state: { sorting, globalFilter },
+    onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     initialState: { pagination: { pageSize: 10 } },
   });
@@ -170,13 +165,20 @@ export function CowPage() {
                 {table.getHeaderGroups().map((hg) => (
                   <TableRow key={hg.id}>
                     {hg.headers.map((h) => (
-                      <TableHead key={h.id}>
-                        {h.isPlaceholder
-                          ? null
-                          : flexRender(
-                              h.column.columnDef.header,
-                              h.getContext(),
-                            )}
+                      <TableHead
+                        key={h.id}
+                        className={h.column.getCanSort() ? "cursor-pointer select-none" : ""}
+                        onClick={h.column.getToggleSortingHandler()}
+                      >
+                        <div className="flex items-center gap-1">
+                          {h.isPlaceholder
+                            ? null
+                            : flexRender(
+                                h.column.columnDef.header,
+                                h.getContext(),
+                              )}
+                          {{ asc: " ↑", desc: " ↓" }[h.column.getIsSorted() as string] ?? null}
+                        </div>
                       </TableHead>
                     ))}
                   </TableRow>

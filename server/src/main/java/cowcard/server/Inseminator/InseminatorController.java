@@ -31,6 +31,11 @@ public class InseminatorController {
         return ServerRes.success(inseminatorService.findAllActive());
     }
 
+    @GetMapping("/{id}/detail")
+    public ServerRes<InseminatorDetail> getDetail(@PathVariable Integer id) {
+        return ServerRes.success(inseminatorService.getDetail(id));
+    }
+
     @PutMapping("/toggle-active/{id}")
     public ServerRes<Inseminator> toggleActive(@PathVariable Integer id) {
         return ServerRes.success(inseminatorService.toggleActive(id));

@@ -36,6 +36,16 @@ import { Route as AuthCalfStatusesIndexRouteImport } from './routes/_auth/calf-s
 import { Route as AuthCalfRecordsIndexRouteImport } from './routes/_auth/calf-records/index'
 import { Route as AuthAiStatusesIndexRouteImport } from './routes/_auth/ai-statuses/index'
 import { Route as AuthAiRecordsIndexRouteImport } from './routes/_auth/ai-records/index'
+import { Route as AuthTranspondersTransponderIdRouteImport } from './routes/_auth/transponders/$transponderId'
+import { Route as AuthSemenSemenIdRouteImport } from './routes/_auth/semen/$semenId'
+import { Route as AuthInseminatorsInseminatorIdRouteImport } from './routes/_auth/inseminators/$inseminatorId'
+import { Route as AuthFeedlotsFeedlotIdRouteImport } from './routes/_auth/feedlots/$feedlotId'
+import { Route as AuthCowsCowIdRouteImport } from './routes/_auth/cows/$cowId'
+import { Route as AuthCowStatusesStatusIdRouteImport } from './routes/_auth/cow-statuses/$statusId'
+import { Route as AuthCowRolesRoleIdRouteImport } from './routes/_auth/cow-roles/$roleId'
+import { Route as AuthCowGendersGenderIdRouteImport } from './routes/_auth/cow-genders/$genderId'
+import { Route as AuthColorsColorIdRouteImport } from './routes/_auth/colors/$colorId'
+import { Route as AuthAiRecordsAiRecordIdRouteImport } from './routes/_auth/ai-records/$aiRecordId'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -173,6 +183,58 @@ const AuthAiRecordsIndexRoute = AuthAiRecordsIndexRouteImport.update({
   path: '/ai-records/',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthTranspondersTransponderIdRoute =
+  AuthTranspondersTransponderIdRouteImport.update({
+    id: '/transponders/$transponderId',
+    path: '/transponders/$transponderId',
+    getParentRoute: () => AuthRoute,
+  } as any)
+const AuthSemenSemenIdRoute = AuthSemenSemenIdRouteImport.update({
+  id: '/semen/$semenId',
+  path: '/semen/$semenId',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthInseminatorsInseminatorIdRoute =
+  AuthInseminatorsInseminatorIdRouteImport.update({
+    id: '/inseminators/$inseminatorId',
+    path: '/inseminators/$inseminatorId',
+    getParentRoute: () => AuthRoute,
+  } as any)
+const AuthFeedlotsFeedlotIdRoute = AuthFeedlotsFeedlotIdRouteImport.update({
+  id: '/feedlots/$feedlotId',
+  path: '/feedlots/$feedlotId',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthCowsCowIdRoute = AuthCowsCowIdRouteImport.update({
+  id: '/cows/$cowId',
+  path: '/cows/$cowId',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthCowStatusesStatusIdRoute = AuthCowStatusesStatusIdRouteImport.update({
+  id: '/cow-statuses/$statusId',
+  path: '/cow-statuses/$statusId',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthCowRolesRoleIdRoute = AuthCowRolesRoleIdRouteImport.update({
+  id: '/cow-roles/$roleId',
+  path: '/cow-roles/$roleId',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthCowGendersGenderIdRoute = AuthCowGendersGenderIdRouteImport.update({
+  id: '/cow-genders/$genderId',
+  path: '/cow-genders/$genderId',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthColorsColorIdRoute = AuthColorsColorIdRouteImport.update({
+  id: '/colors/$colorId',
+  path: '/colors/$colorId',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthAiRecordsAiRecordIdRoute = AuthAiRecordsAiRecordIdRouteImport.update({
+  id: '/ai-records/$aiRecordId',
+  path: '/ai-records/$aiRecordId',
+  getParentRoute: () => AuthRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthIndexRoute
@@ -182,6 +244,16 @@ export interface FileRoutesByFullPath {
   '/dam-form': typeof DamFormRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/ai-records/$aiRecordId': typeof AuthAiRecordsAiRecordIdRoute
+  '/colors/$colorId': typeof AuthColorsColorIdRoute
+  '/cow-genders/$genderId': typeof AuthCowGendersGenderIdRoute
+  '/cow-roles/$roleId': typeof AuthCowRolesRoleIdRoute
+  '/cow-statuses/$statusId': typeof AuthCowStatusesStatusIdRoute
+  '/cows/$cowId': typeof AuthCowsCowIdRoute
+  '/feedlots/$feedlotId': typeof AuthFeedlotsFeedlotIdRoute
+  '/inseminators/$inseminatorId': typeof AuthInseminatorsInseminatorIdRoute
+  '/semen/$semenId': typeof AuthSemenSemenIdRoute
+  '/transponders/$transponderId': typeof AuthTranspondersTransponderIdRoute
   '/ai-records/': typeof AuthAiRecordsIndexRoute
   '/ai-statuses/': typeof AuthAiStatusesIndexRoute
   '/calf-records/': typeof AuthCalfRecordsIndexRoute
@@ -210,6 +282,16 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/': typeof AuthIndexRoute
+  '/ai-records/$aiRecordId': typeof AuthAiRecordsAiRecordIdRoute
+  '/colors/$colorId': typeof AuthColorsColorIdRoute
+  '/cow-genders/$genderId': typeof AuthCowGendersGenderIdRoute
+  '/cow-roles/$roleId': typeof AuthCowRolesRoleIdRoute
+  '/cow-statuses/$statusId': typeof AuthCowStatusesStatusIdRoute
+  '/cows/$cowId': typeof AuthCowsCowIdRoute
+  '/feedlots/$feedlotId': typeof AuthFeedlotsFeedlotIdRoute
+  '/inseminators/$inseminatorId': typeof AuthInseminatorsInseminatorIdRoute
+  '/semen/$semenId': typeof AuthSemenSemenIdRoute
+  '/transponders/$transponderId': typeof AuthTranspondersTransponderIdRoute
   '/ai-records': typeof AuthAiRecordsIndexRoute
   '/ai-statuses': typeof AuthAiStatusesIndexRoute
   '/calf-records': typeof AuthCalfRecordsIndexRoute
@@ -240,6 +322,16 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/_auth/': typeof AuthIndexRoute
+  '/_auth/ai-records/$aiRecordId': typeof AuthAiRecordsAiRecordIdRoute
+  '/_auth/colors/$colorId': typeof AuthColorsColorIdRoute
+  '/_auth/cow-genders/$genderId': typeof AuthCowGendersGenderIdRoute
+  '/_auth/cow-roles/$roleId': typeof AuthCowRolesRoleIdRoute
+  '/_auth/cow-statuses/$statusId': typeof AuthCowStatusesStatusIdRoute
+  '/_auth/cows/$cowId': typeof AuthCowsCowIdRoute
+  '/_auth/feedlots/$feedlotId': typeof AuthFeedlotsFeedlotIdRoute
+  '/_auth/inseminators/$inseminatorId': typeof AuthInseminatorsInseminatorIdRoute
+  '/_auth/semen/$semenId': typeof AuthSemenSemenIdRoute
+  '/_auth/transponders/$transponderId': typeof AuthTranspondersTransponderIdRoute
   '/_auth/ai-records/': typeof AuthAiRecordsIndexRoute
   '/_auth/ai-statuses/': typeof AuthAiStatusesIndexRoute
   '/_auth/calf-records/': typeof AuthCalfRecordsIndexRoute
@@ -270,6 +362,16 @@ export interface FileRouteTypes {
     | '/dam-form'
     | '/login'
     | '/register'
+    | '/ai-records/$aiRecordId'
+    | '/colors/$colorId'
+    | '/cow-genders/$genderId'
+    | '/cow-roles/$roleId'
+    | '/cow-statuses/$statusId'
+    | '/cows/$cowId'
+    | '/feedlots/$feedlotId'
+    | '/inseminators/$inseminatorId'
+    | '/semen/$semenId'
+    | '/transponders/$transponderId'
     | '/ai-records/'
     | '/ai-statuses/'
     | '/calf-records/'
@@ -298,6 +400,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/'
+    | '/ai-records/$aiRecordId'
+    | '/colors/$colorId'
+    | '/cow-genders/$genderId'
+    | '/cow-roles/$roleId'
+    | '/cow-statuses/$statusId'
+    | '/cows/$cowId'
+    | '/feedlots/$feedlotId'
+    | '/inseminators/$inseminatorId'
+    | '/semen/$semenId'
+    | '/transponders/$transponderId'
     | '/ai-records'
     | '/ai-statuses'
     | '/calf-records'
@@ -327,6 +439,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/_auth/'
+    | '/_auth/ai-records/$aiRecordId'
+    | '/_auth/colors/$colorId'
+    | '/_auth/cow-genders/$genderId'
+    | '/_auth/cow-roles/$roleId'
+    | '/_auth/cow-statuses/$statusId'
+    | '/_auth/cows/$cowId'
+    | '/_auth/feedlots/$feedlotId'
+    | '/_auth/inseminators/$inseminatorId'
+    | '/_auth/semen/$semenId'
+    | '/_auth/transponders/$transponderId'
     | '/_auth/ai-records/'
     | '/_auth/ai-statuses/'
     | '/_auth/calf-records/'
@@ -549,11 +671,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAiRecordsIndexRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/transponders/$transponderId': {
+      id: '/_auth/transponders/$transponderId'
+      path: '/transponders/$transponderId'
+      fullPath: '/transponders/$transponderId'
+      preLoaderRoute: typeof AuthTranspondersTransponderIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/semen/$semenId': {
+      id: '/_auth/semen/$semenId'
+      path: '/semen/$semenId'
+      fullPath: '/semen/$semenId'
+      preLoaderRoute: typeof AuthSemenSemenIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/inseminators/$inseminatorId': {
+      id: '/_auth/inseminators/$inseminatorId'
+      path: '/inseminators/$inseminatorId'
+      fullPath: '/inseminators/$inseminatorId'
+      preLoaderRoute: typeof AuthInseminatorsInseminatorIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/feedlots/$feedlotId': {
+      id: '/_auth/feedlots/$feedlotId'
+      path: '/feedlots/$feedlotId'
+      fullPath: '/feedlots/$feedlotId'
+      preLoaderRoute: typeof AuthFeedlotsFeedlotIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/cows/$cowId': {
+      id: '/_auth/cows/$cowId'
+      path: '/cows/$cowId'
+      fullPath: '/cows/$cowId'
+      preLoaderRoute: typeof AuthCowsCowIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/cow-statuses/$statusId': {
+      id: '/_auth/cow-statuses/$statusId'
+      path: '/cow-statuses/$statusId'
+      fullPath: '/cow-statuses/$statusId'
+      preLoaderRoute: typeof AuthCowStatusesStatusIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/cow-roles/$roleId': {
+      id: '/_auth/cow-roles/$roleId'
+      path: '/cow-roles/$roleId'
+      fullPath: '/cow-roles/$roleId'
+      preLoaderRoute: typeof AuthCowRolesRoleIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/cow-genders/$genderId': {
+      id: '/_auth/cow-genders/$genderId'
+      path: '/cow-genders/$genderId'
+      fullPath: '/cow-genders/$genderId'
+      preLoaderRoute: typeof AuthCowGendersGenderIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/colors/$colorId': {
+      id: '/_auth/colors/$colorId'
+      path: '/colors/$colorId'
+      fullPath: '/colors/$colorId'
+      preLoaderRoute: typeof AuthColorsColorIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/ai-records/$aiRecordId': {
+      id: '/_auth/ai-records/$aiRecordId'
+      path: '/ai-records/$aiRecordId'
+      fullPath: '/ai-records/$aiRecordId'
+      preLoaderRoute: typeof AuthAiRecordsAiRecordIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
   }
 }
 
 interface AuthRouteChildren {
   AuthIndexRoute: typeof AuthIndexRoute
+  AuthAiRecordsAiRecordIdRoute: typeof AuthAiRecordsAiRecordIdRoute
+  AuthColorsColorIdRoute: typeof AuthColorsColorIdRoute
+  AuthCowGendersGenderIdRoute: typeof AuthCowGendersGenderIdRoute
+  AuthCowRolesRoleIdRoute: typeof AuthCowRolesRoleIdRoute
+  AuthCowStatusesStatusIdRoute: typeof AuthCowStatusesStatusIdRoute
+  AuthCowsCowIdRoute: typeof AuthCowsCowIdRoute
+  AuthFeedlotsFeedlotIdRoute: typeof AuthFeedlotsFeedlotIdRoute
+  AuthInseminatorsInseminatorIdRoute: typeof AuthInseminatorsInseminatorIdRoute
+  AuthSemenSemenIdRoute: typeof AuthSemenSemenIdRoute
+  AuthTranspondersTransponderIdRoute: typeof AuthTranspondersTransponderIdRoute
   AuthAiRecordsIndexRoute: typeof AuthAiRecordsIndexRoute
   AuthAiStatusesIndexRoute: typeof AuthAiStatusesIndexRoute
   AuthCalfRecordsIndexRoute: typeof AuthCalfRecordsIndexRoute
@@ -577,6 +779,16 @@ interface AuthRouteChildren {
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthIndexRoute: AuthIndexRoute,
+  AuthAiRecordsAiRecordIdRoute: AuthAiRecordsAiRecordIdRoute,
+  AuthColorsColorIdRoute: AuthColorsColorIdRoute,
+  AuthCowGendersGenderIdRoute: AuthCowGendersGenderIdRoute,
+  AuthCowRolesRoleIdRoute: AuthCowRolesRoleIdRoute,
+  AuthCowStatusesStatusIdRoute: AuthCowStatusesStatusIdRoute,
+  AuthCowsCowIdRoute: AuthCowsCowIdRoute,
+  AuthFeedlotsFeedlotIdRoute: AuthFeedlotsFeedlotIdRoute,
+  AuthInseminatorsInseminatorIdRoute: AuthInseminatorsInseminatorIdRoute,
+  AuthSemenSemenIdRoute: AuthSemenSemenIdRoute,
+  AuthTranspondersTransponderIdRoute: AuthTranspondersTransponderIdRoute,
   AuthAiRecordsIndexRoute: AuthAiRecordsIndexRoute,
   AuthAiStatusesIndexRoute: AuthAiStatusesIndexRoute,
   AuthCalfRecordsIndexRoute: AuthCalfRecordsIndexRoute,

@@ -20,6 +20,11 @@ public class TransponderController {
     @Autowired
     private TransponderService transponderService;
 
+    @GetMapping("/{id}/detail")
+    public ServerRes<TransponderDetail> getDetail(@PathVariable Integer id) {
+        return ServerRes.success(transponderService.getDetail(id));
+    }
+
     @GetMapping("/all")
     public ServerRes<List<Transponder>> getAll() {
         return ServerRes.success(transponderService.findAll());

@@ -5,8 +5,10 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   flexRender,
   createColumnHelper,
+  type SortingState,
 } from "@tanstack/react-table";
 import type { CowView } from "@/lib/types";
 import { cowApi } from "@/lib/api";
@@ -48,6 +50,7 @@ export function CowMultiSelectDialog({
   currentCowIds,
 }: CowMultiSelectDialogProps) {
   const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   // Track the snapshot of currentCowIds when dialog opened
   const initialCowIdsRef = useRef<Set<number>>(new Set());
@@ -191,7 +194,10 @@ export function CowMultiSelectDialog({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    state: { sorting },
+    onSortingChange: setSorting,
     initialState: { pagination: { pageSize: 10 } },
   });
 
@@ -259,13 +265,20 @@ export function CowMultiSelectDialog({
                       />
                     </TableHead>
                     {hg.headers.map((h) => (
-                      <TableHead key={h.id}>
-                        {h.isPlaceholder
-                          ? null
-                          : flexRender(
-                              h.column.columnDef.header,
-                              h.getContext()
-                            )}
+                      <TableHead
+                        key={h.id}
+                        className={h.column.getCanSort() ? "cursor-pointer select-none" : ""}
+                        onClick={h.column.getToggleSortingHandler()}
+                      >
+                        <div className="flex items-center gap-1">
+                          {h.isPlaceholder
+                            ? null
+                            : flexRender(
+                                h.column.columnDef.header,
+                                h.getContext()
+                              )}
+                          {{ asc: " ↑", desc: " ↓" }[h.column.getIsSorted() as string] ?? null}
+                        </div>
                       </TableHead>
                     ))}
                   </TableRow>

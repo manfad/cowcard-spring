@@ -48,6 +48,15 @@ public class FeedlotService {
                 .toList();
     }
 
+    public FeedlotDetail getDetail(Integer id) {
+        Feedlot feedlot = feedlotRepository.findById(id).orElseThrow();
+        List<FeedlotCowSummary> cows = cowRepository.findByCurrentFeedlotId(id).stream()
+                .map(FeedlotCowSummary::from).toList();
+        List<FeedlotHistorySummary> history = cowFeedlotHistoryRepository.findByFeedlot_IdOrderByMovedInAtDesc(id).stream()
+                .map(FeedlotHistorySummary::from).toList();
+        return FeedlotDetail.from(feedlot, cows, history);
+    }
+
     public Feedlot toggleActive(Integer id) {
         Feedlot e = feedlotRepository.findById(id).orElseThrow();
         e.setActive(e.getActive() == null || !e.getActive());

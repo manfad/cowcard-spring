@@ -22,6 +22,7 @@ function CowStatusesPage() {
       updateFn={(id, data) => cowStatusApi.update(id, data)}
       entityLabel="Cow Status"
       emptyMessage="No cow statuses found."
+      detailPath="/cow-statuses"
     />
   );
 }
