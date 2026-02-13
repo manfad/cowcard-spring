@@ -211,11 +211,6 @@ function InseminatorDetailPage() {
           </Link>
           <span className="text-muted-foreground text-sm">/</span>
           <h1 className="text-3xl font-bold">{detail.name}</h1>
-          {detail.active != null && (
-            <Badge variant={detail.active ? "default" : "secondary"}>
-              {detail.active ? "Active" : "Inactive"}
-            </Badge>
-          )}
         </div>
         {detail.remark && (
           <p className="text-muted-foreground mt-1">{detail.remark}</p>

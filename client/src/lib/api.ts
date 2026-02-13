@@ -14,14 +14,14 @@ import type {
   Transponder,
   AiRecord,
   AiRecordFormData,
-  DamAiOverview,
+  DamAiRecord,
   CalfRecord,
   TransponderRecord,
   CowFeedlotHistory,
   CowTransponderHistory,
   PregnancyDiagnosis,
   AiStatus,
-  CalfStatus,
+  CowStatusFormData,
   Color,
   CowGender,
   CowRole,
@@ -174,8 +174,8 @@ export const aiRecordApi = {
   getNextCode: () => api.get<ServerRes<string>>("/ai-record/next-code"),
   getDamAiCount: (damId: number) =>
     api.get<ServerRes<number>>(`/ai-record/dam-ai-count/${damId}`),
-  getDamAiOverview: () =>
-    api.get<ServerRes<DamAiOverview[]>>("/ai-record/dam-ai-overview"),
+  getDamAiRecord: () =>
+    api.get<ServerRes<DamAiRecord[]>>("/ai-record/dam-ai-record"),
 };
 
 export const calfRecordApi = {
@@ -213,16 +213,6 @@ export const aiStatusApi = {
     api.post<ServerRes<AiStatus>>("/ai-status", data),
   update: (id: number, data: LookupFormData) =>
     api.put<ServerRes<AiStatus>>(`/ai-status/${id}`, data),
-};
-
-export const calfStatusApi = {
-  getAll: () => api.get<ServerRes<CalfStatus[]>>("/calf-status/all"),
-  toggleActive: (id: number) =>
-    api.put<ServerRes<CalfStatus>>(`/calf-status/toggle-active/${id}`),
-  create: (data: LookupFormData) =>
-    api.post<ServerRes<CalfStatus>>("/calf-status", data),
-  update: (id: number, data: LookupFormData) =>
-    api.put<ServerRes<CalfStatus>>(`/calf-status/${id}`, data),
 };
 
 export const colorApi = {
@@ -267,9 +257,9 @@ export const cowStatusApi = {
     api.get<ServerRes<StatusDetail>>(`/cow-status/${id}/detail`),
   toggleActive: (id: number) =>
     api.put<ServerRes<CowStatus>>(`/cow-status/toggle-active/${id}`),
-  create: (data: LookupFormData) =>
+  create: (data: CowStatusFormData) =>
     api.post<ServerRes<CowStatus>>("/cow-status", data),
-  update: (id: number, data: LookupFormData) =>
+  update: (id: number, data: CowStatusFormData) =>
     api.put<ServerRes<CowStatus>>(`/cow-status/${id}`, data),
 };
 

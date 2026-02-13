@@ -2,7 +2,10 @@ package cowcard.server.AiRecord;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,19 +61,51 @@ public class AiRecordService {
         return aiRecordRepository.countByDamIdAndSemenBullFalse(damId);
     }
 
-    public List<DamAiOverview> getDamAiOverview() {
+    public List<DamAiRecord> getDamAiRecord() {
         List<AiRecord> nonBullRecords = aiRecordRepository.findBySemenBullFalseOrderByDamIdAscAiDateAsc();
-        return nonBullRecords.stream()
-                .collect(Collectors.groupingBy(r -> r.getDam().getId()))
-                .entrySet().stream()
+        List<AiRecord> bullRecords = aiRecordRepository.findBySemenBullTrueOrderByDamIdAscAiDateAsc();
+
+        Map<Integer, List<AiRecord>> nonBullByDam = nonBullRecords.stream()
+                .collect(Collectors.groupingBy(r -> r.getDam().getId()));
+        Map<Integer, List<AiRecord>> bullByDam = bullRecords.stream()
+                .collect(Collectors.groupingBy(r -> r.getDam().getId()));
+
+        // Collect all dam IDs from both maps
+        Map<Integer, AiRecord> damSamples = new HashMap<>();
+        nonBullRecords.forEach(r -> damSamples.putIfAbsent(r.getDam().getId(), r));
+        bullRecords.forEach(r -> damSamples.putIfAbsent(r.getDam().getId(), r));
+
+        return damSamples.entrySet().stream()
                 .map(entry -> {
-                    List<AiRecord> records = entry.getValue();
-                    AiRecord first = records.getFirst();
-                    List<AiRecordSummary> summaries = records.stream()
+                    Integer damId = entry.getKey();
+                    AiRecord sample = entry.getValue();
+
+                    List<AiRecordSummary> aiSummaries = nonBullByDam.getOrDefault(damId, List.of()).stream()
                             .limit(3)
                             .map(AiRecordSummary::from)
                             .toList();
-                    return new DamAiOverview(first.getDam().getId(), first.getDam().getTag(), summaries);
+
+                    List<BullAiSummary> bullSummaries = bullByDam.getOrDefault(damId, List.of()).stream()
+                            .map(BullAiSummary::from)
+                            .toList();
+
+                    // Calculate lastAiDays from most recent AI record (any type)
+                    Integer lastAiDays = null;
+                    List<AiRecord> allDamRecords = aiRecordRepository.findByDamIdOrderByAiDateDesc(damId);
+                    if (!allDamRecords.isEmpty()) {
+                        String mostRecentAiDate = allDamRecords.getFirst().getAiDate();
+                        if (mostRecentAiDate != null && !mostRecentAiDate.isBlank()) {
+                            LocalDate aiDate = LocalDate.parse(mostRecentAiDate);
+                            lastAiDays = (int) ChronoUnit.DAYS.between(aiDate, LocalDate.now());
+                        }
+                    }
+
+                    return new DamAiRecord(
+                            damId,
+                            sample.getDam().getTag(),
+                            aiSummaries,
+                            bullSummaries,
+                            lastAiDays);
                 })
                 .toList();
     }

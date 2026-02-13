@@ -38,19 +38,26 @@ export interface LookupFormData {
 }
 
 export type AiStatus = LookupEntity;
-export type CalfStatus = LookupEntity;
 export type Color = LookupEntity;
 export type CowGender = LookupEntity;
 export interface CowRole extends LookupEntity {
   cowGenders: CowGender[];
 }
-export type CowStatus = LookupEntity;
+export interface CowStatus extends LookupEntity {
+  cowRoles: CowRole[];
+}
 export type PdStatus = LookupEntity;
 
 export interface CowRoleFormData {
   name: string;
   remark: string;
   cowGenderIds: number[];
+}
+
+export interface CowStatusFormData {
+  name: string;
+  remark: string;
+  cowRoleIds: number[];
 }
 
 export interface SemenFormData {
@@ -120,11 +127,16 @@ export interface CowView {
   id: number;
   tag: string;
   gender: string | null;
+  genderId: number | null;
   role: string | null;
+  roleId: number | null;
   status: string | null;
+  statusId: number | null;
   weight: number | null;
   feedlot: string | null;
+  feedlotId: number | null;
   transponder: string | null;
+  transponderId: number | null;
   remark: string | null;
   active: boolean | null;
 }
@@ -140,6 +152,7 @@ export interface AiRecord {
   dam: { id: number; tag: string } | null;
   semen: { id: number; name: string } | null;
   feedlot: string | null;
+  feedlotId: number | null;
   aiBy: { id: number; name: string } | null;
   preparedBy: { id: number; name: string } | null;
   status: { id: number; name: string } | null;
@@ -203,7 +216,7 @@ export interface AiRecordFormData {
   remark: string;
 }
 
-// Dam AI Overview
+// Dam AI Record
 export interface AiRecordSummary {
   id: number;
   code: string;
@@ -211,10 +224,17 @@ export interface AiRecordSummary {
   semenName: string;
 }
 
-export interface DamAiOverview {
+export interface BullAiSummary {
+  id: number;
+  code: string;
+}
+
+export interface DamAiRecord {
   damId: number;
   damTag: string;
   aiRecords: AiRecordSummary[];
+  bullAiRecords: BullAiSummary[];
+  lastAiDays: number | null;
 }
 
 // Detail page types

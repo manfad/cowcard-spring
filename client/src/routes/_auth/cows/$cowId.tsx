@@ -316,31 +316,33 @@ function CowDetailPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Transponder History ({detail.transponderHistory.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SortableTable
-            data={detail.transponderHistory}
-            columns={transponderHistColumns}
-            emptyMessage="No transponder history."
-          />
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Feedlot History ({detail.feedlotHistory.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SortableTable
+              data={detail.feedlotHistory}
+              columns={feedlotHistColumns}
+              emptyMessage="No feedlot history."
+            />
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Feedlot History ({detail.feedlotHistory.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SortableTable
-            data={detail.feedlotHistory}
-            columns={feedlotHistColumns}
-            emptyMessage="No feedlot history."
-          />
-        </CardContent>
-      </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Transponder History ({detail.transponderHistory.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SortableTable
+              data={detail.transponderHistory}
+              columns={transponderHistColumns}
+              emptyMessage="No transponder history."
+            />
+          </CardContent>
+        </Card>
+      </div>
 
       <Card>
         <CardHeader>

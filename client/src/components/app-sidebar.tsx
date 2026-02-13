@@ -19,7 +19,6 @@ import { useAuth } from "@/lib/auth";
 const mainNav = [
   { title: "Dashboard", href: "/" },
   { title: "Cows", href: "/cows" },
-  { title: "Dam AI Overview", href: "/dam-ai-overview" },
 ];
 
 const formNav = [
@@ -36,6 +35,7 @@ const managementNav = [
 ];
 
 const recordsNav = [
+  { title: "Dam AI Record", href: "/dam-ai-record" },
   { title: "AI Records", href: "/ai-records" },
   { title: "Pregnancy Diagnosis", href: "/pregnancy-diagnosis" },
   { title: "Calf Records", href: "/calf-records" },
@@ -49,7 +49,6 @@ const libraryNav = [
   { title: "Cow Roles", href: "/cow-roles" },
   { title: "Cow Statuses", href: "/cow-statuses" },
   { title: "AI Statuses", href: "/ai-statuses" },
-  { title: "Calf Statuses", href: "/calf-statuses" },
   { title: "PD Statuses", href: "/pd-statuses" },
 ];
 
@@ -87,11 +86,7 @@ function NavGroup({
   );
 }
 
-function FormNavGroup({
-  items,
-}: {
-  items: { title: string; href: string }[];
-}) {
+function FormNavGroup({ items }: { items: { title: string; href: string }[] }) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Form</SidebarGroupLabel>
@@ -130,15 +125,14 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <NavGroup label="Main" items={mainNav} pathname={location.pathname} />
-        <FormNavGroup items={formNav} />
-        <NavGroup
-          label="Management"
-          items={managementNav}
-          pathname={location.pathname}
-        />
         <NavGroup
           label="Records"
           items={recordsNav}
+          pathname={location.pathname}
+        />
+        <NavGroup
+          label="Management"
+          items={managementNav}
           pathname={location.pathname}
         />
         {user?.admin && (
@@ -148,11 +142,14 @@ export function AppSidebar() {
             pathname={location.pathname}
           />
         )}
-        <NavGroup
-          label="System"
-          items={systemNav}
-          pathname={location.pathname}
-        />
+        {user?.admin && (
+          <NavGroup
+            label="System"
+            items={systemNav}
+            pathname={location.pathname}
+          />
+        )}
+        <FormNavGroup items={formNav} />
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
         <div className="flex items-center justify-between">

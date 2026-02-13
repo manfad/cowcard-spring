@@ -37,7 +37,7 @@ public class CowGenderService {
 
     public GenderWithCows getWithCows(Integer id) {
         CowGender gender = cowGenderRepository.findById(id).orElseThrow();
-        List<GenderCowSummary> cows = cowRepository.findByGenderId(id).stream()
+        List<GenderCowSummary> cows = cowRepository.findByGenderIdOrderByTag(id).stream()
                 .map(GenderCowSummary::from).toList();
         return GenderWithCows.from(gender, cows);
     }

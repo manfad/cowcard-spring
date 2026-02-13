@@ -21,15 +21,20 @@ public interface CowRepository extends JpaRepository<Cow, Integer> {
 
     long countByCurrentFeedlotId(Integer feedlotId);
 
-    List<Cow> findByColorId(Integer colorId);
+    @Query("SELECT c FROM Cow c WHERE c.color.id = :colorId ORDER BY c.tag ASC")
+    List<Cow> findByColorIdOrderByTag(Integer colorId);
 
-    List<Cow> findByGenderId(Integer genderId);
+    @Query("SELECT c FROM Cow c WHERE c.gender.id = :genderId ORDER BY c.tag ASC")
+    List<Cow> findByGenderIdOrderByTag(Integer genderId);
 
-    List<Cow> findByRoleId(Integer roleId);
+    @Query("SELECT c FROM Cow c WHERE c.role.id = :roleId ORDER BY c.tag ASC")
+    List<Cow> findByRoleIdOrderByTag(Integer roleId);
 
-    List<Cow> findByStatusId(Integer statusId);
+    @Query("SELECT c FROM Cow c WHERE c.status.id = :statusId ORDER BY c.tag ASC")
+    List<Cow> findByStatusIdOrderByTag(Integer statusId);
 
-    List<Cow> findByCurrentFeedlotId(Integer feedlotId);
+    @Query("SELECT c FROM Cow c WHERE c.currentFeedlot.id = :feedlotId ORDER BY c.tag ASC")
+    List<Cow> findByCurrentFeedlotIdOrderByTag(Integer feedlotId);
 
     List<Cow> findByDamId(Integer damId);
 

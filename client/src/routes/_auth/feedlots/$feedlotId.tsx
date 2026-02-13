@@ -37,6 +37,9 @@ export const Route = createFileRoute("/_auth/feedlots/$feedlotId")({
 // Cows table
 type CowRow = FeedlotDetail["cows"][number];
 const cowColumnHelper = createColumnHelper<CowRow>();
+
+const linkClass = "text-primary underline";
+
 const cowColumns = [
   cowColumnHelper.display({
     id: "index",
@@ -45,14 +48,18 @@ const cowColumns = [
   }),
   cowColumnHelper.accessor("tag", {
     header: "Tag",
-    cell: (info) => <span className="font-medium">{info.getValue()}</span>,
+    cell: (info) => (
+      <Link
+        to={`/cows/${info.row.original.id}`}
+        className={`font-medium ${linkClass}`}
+      >
+        {info.getValue()}
+      </Link>
+    ),
   }),
   cowColumnHelper.accessor("role", {
     header: "Role",
-    cell: (info) => {
-      const val = info.getValue();
-      return val ? <Badge variant="outline">{val}</Badge> : "-";
-    },
+    cell: (info) => info.getValue() || "-",
   }),
 ];
 
@@ -133,11 +140,6 @@ function FeedlotDetailPage() {
           </Link>
           <span className="text-muted-foreground text-sm">/</span>
           <h1 className="text-3xl font-bold">{detail.name}</h1>
-          {detail.active != null && (
-            <Badge variant={detail.active ? "default" : "secondary"}>
-              {detail.active ? "Active" : "Inactive"}
-            </Badge>
-          )}
         </div>
         {detail.remark && (
           <p className="text-muted-foreground mt-1">{detail.remark}</p>

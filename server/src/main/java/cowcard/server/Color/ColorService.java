@@ -37,7 +37,7 @@ public class ColorService {
 
     public ColorWithCows getWithCows(Integer id) {
         Color color = colorRepository.findById(id).orElseThrow();
-        List<CowSummary> cows = cowRepository.findByColorId(id).stream()
+        List<CowSummary> cows = cowRepository.findByColorIdOrderByTag(id).stream()
                 .map(CowSummary::from)
                 .toList();
         return ColorWithCows.from(color, cows);

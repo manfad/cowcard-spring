@@ -42,12 +42,20 @@ public class CowStatusController {
     }
 
     @PostMapping
-    public ServerRes<CowStatus> create(@RequestBody CowStatus cowStatus) {
-        return ServerRes.success(cowStatusService.create(cowStatus));
+    public ServerRes<CowStatus> create(@RequestBody CowStatusRequest request) {
+        CowStatus cowStatus = new CowStatus();
+        cowStatus.setName(request.name());
+        cowStatus.setRemark(request.remark());
+        return ServerRes.success(cowStatusService.create(cowStatus, request.cowRoleIds()));
     }
 
     @PutMapping("/{id}")
-    public ServerRes<CowStatus> update(@PathVariable Integer id, @RequestBody CowStatus cowStatus) {
-        return ServerRes.success(cowStatusService.update(id, cowStatus));
+    public ServerRes<CowStatus> update(@PathVariable Integer id, @RequestBody CowStatusRequest request) {
+        CowStatus cowStatus = new CowStatus();
+        cowStatus.setName(request.name());
+        cowStatus.setRemark(request.remark());
+        return ServerRes.success(cowStatusService.update(id, cowStatus, request.cowRoleIds()));
     }
+
+    public record CowStatusRequest(String name, String remark, List<Integer> cowRoleIds) {}
 }

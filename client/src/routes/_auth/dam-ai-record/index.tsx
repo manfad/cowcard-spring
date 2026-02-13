@@ -11,9 +11,10 @@ import {
   createColumnHelper,
   type SortingState,
 } from "@tanstack/react-table";
-import { Eye, StickyNote, Plus } from "lucide-react";
-import type { CowView } from "@/lib/types";
-import { cowApi } from "@/lib/api";
+import { Eye } from "lucide-react";
+import { aiRecordApi } from "@/lib/api";
+import type { DamAiRecord } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -39,159 +40,107 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-export const Route = createFileRoute("/_auth/cows/")({
-  component: CowPage,
+export const Route = createFileRoute("/_auth/dam-ai-record/")({
+  component: DamAiRecordPage,
 });
 
-const columnHelper = createColumnHelper<CowView>();
+const columnHelper = createColumnHelper<DamAiRecord>();
 
 const linkClass = "text-primary underline";
 
-const staticColumns = [
-  columnHelper.display({
-    id: "index",
-    header: "#",
-    cell: ({ row }) => row.index + 1,
-  }),
-  columnHelper.accessor("tag", {
-    header: "Tag",
-    cell: (info) => (
-      <Link
-        to={`/cows/${info.row.original.id}`}
-        className={`font-medium ${linkClass}`}
-      >
-        {info.getValue()}
-      </Link>
-    ),
-  }),
-  columnHelper.accessor("gender", {
-    header: "Gender",
-    cell: (info) => {
-      const val = info.getValue();
-      const id = info.row.original.genderId;
-      if (!val) return "-";
-      if (id)
-        return (
-          <Link to={`/cow-genders/${id}`} className={linkClass}>
-            {val}
-          </Link>
-        );
-      return val;
-    },
-  }),
-  columnHelper.accessor("role", {
-    header: "Role",
-    cell: (info) => {
-      const val = info.getValue();
-      const id = info.row.original.roleId;
-      if (!val) return "-";
-      if (id)
-        return (
-          <Link to={`/cow-roles/${id}`} className={linkClass}>
-            {val}
-          </Link>
-        );
-      return val;
-    },
-  }),
-  columnHelper.accessor("status", {
-    header: "Status",
-    cell: (info) => {
-      const val = info.getValue();
-      const id = info.row.original.statusId;
-      if (!val) return "-";
-      if (id)
-        return (
-          <Link to={`/cow-statuses/${id}`} className={linkClass}>
-            {val}
-          </Link>
-        );
-      return val;
-    },
-  }),
-  columnHelper.accessor("feedlot", {
-    header: "Feedlot",
-    cell: (info) => {
-      const val = info.getValue();
-      const id = info.row.original.feedlotId;
-      if (!val) return "-";
-      if (id)
-        return (
-          <Link to={`/feedlots/${id}`} className={linkClass}>
-            {val}
-          </Link>
-        );
-      return val;
-    },
-  }),
-  columnHelper.accessor("transponder", {
-    header: "Transponder",
-    cell: (info) => {
-      const val = info.getValue();
-      const id = info.row.original.transponderId;
-      if (!val) return "-";
-      if (id)
-        return (
-          <Link to={`/transponders/${id}`} className={linkClass}>
-            {val}
-          </Link>
-        );
-      return val;
-    },
-  }),
-];
+function formatAiRecord(record: DamAiRecord["aiRecords"][number] | undefined) {
+  if (!record) return "-";
+  return (
+    <Link to={`/ai-records/${record.id}`} className={linkClass}>
+      {record.code}
+    </Link>
+  );
+}
 
-function CowPage() {
+function formatLastAiDays(days: number | null) {
+  if (days === null) return "-";
+  if (days === 0) return <Badge>Today</Badge>;
+  if (days === 1) return <Badge>1 day ago</Badge>;
+  return <Badge>{days} days ago</Badge>;
+}
+
+function DamAiRecordPage() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [remarkDialogOpen, setRemarkDialogOpen] = useState(false);
-  const [selectedRemark, setSelectedRemark] = useState<{
+  const [bullAiDialogOpen, setBullAiDialogOpen] = useState(false);
+  const [selectedDam, setSelectedDam] = useState<{
     tag: string;
-    remark: string;
-  }>({ tag: "", remark: "" });
+    bullAiRecords: DamAiRecord["bullAiRecords"];
+  }>({ tag: "", bullAiRecords: [] });
 
-  const { data: cows = [], isLoading } = useQuery({
-    queryKey: ["cows"],
+  const { data: records = [], isLoading } = useQuery({
+    queryKey: ["dam-ai-record"],
     queryFn: async () => {
-      const res = await cowApi.getAll();
+      const res = await aiRecordApi.getDamAiRecord();
       return res.data.data ?? [];
     },
   });
 
-  const handleRemarkClick = (tag: string, remark: string | null) => {
-    setSelectedRemark({ tag, remark: remark || "No remark" });
-    setRemarkDialogOpen(true);
+  const handleViewBullAi = (row: DamAiRecord) => {
+    setSelectedDam({ tag: row.damTag, bullAiRecords: row.bullAiRecords });
+    setBullAiDialogOpen(true);
   };
 
   const columns = [
-    ...staticColumns,
     columnHelper.display({
-      id: "actions",
-      header: "Actions",
-      cell: (info) => (
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-            <Link to={`/cows/${info.row.original.id}`}>
-              <Eye className="h-4 w-4" />
-            </Link>
+      id: "index",
+      header: "#",
+      cell: ({ row }) => row.index + 1,
+    }),
+    columnHelper.accessor("damTag", {
+      header: "Dam Tag",
+      cell: (info) => {
+        const tag = info.getValue();
+        const id = info.row.original.damId;
+        if (!tag) return "-";
+        return (
+          <Link to={`/cows/${id}`} className={`font-medium ${linkClass}`}>
+            {tag}
+          </Link>
+        );
+      },
+    }),
+    columnHelper.display({
+      id: "ai1",
+      header: "AI Record 1",
+      cell: ({ row }) => formatAiRecord(row.original.aiRecords[0]),
+    }),
+    columnHelper.display({
+      id: "ai2",
+      header: "AI Record 2",
+      cell: ({ row }) => formatAiRecord(row.original.aiRecords[1]),
+    }),
+    columnHelper.display({
+      id: "ai3",
+      header: "AI Record 3",
+      cell: ({ row }) => formatAiRecord(row.original.aiRecords[2]),
+    }),
+    columnHelper.display({
+      id: "bullAi",
+      header: "Bull Record",
+      cell: ({ row }) => {
+        const count = row.original.bullAiRecords.length;
+        if (count === 0) return "-";
+        return (
+          <Button size="sm" onClick={() => handleViewBullAi(row.original)}>
+            View ({count})
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() =>
-              handleRemarkClick(info.row.original.tag, info.row.original.remark)
-            }
-          >
-            <StickyNote className="h-4 w-4" />
-          </Button>
-        </div>
-      ),
+        );
+      },
+    }),
+    columnHelper.accessor("lastAiDays", {
+      header: "Last AI Days",
+      cell: (info) => formatLastAiDays(info.getValue()),
     }),
   ];
 
   const table = useReactTable({
-    data: cows,
+    data: records,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -208,26 +157,22 @@ function CowPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Cows</h1>
-        <p className="text-muted-foreground">Manage cattle records</p>
+        <h1 className="text-3xl font-bold">Dam AI Record</h1>
+        <p className="text-muted-foreground">
+          Overview of dams and their AI records
+        </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Cow List</CardTitle>
-          <CardAction className="flex items-center gap-2">
+          <CardTitle>Dam AI Records</CardTitle>
+          <CardAction>
             <Input
               placeholder="Search..."
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="w-60"
             />
-            <Button asChild>
-              <a href="/cow-form" target="_blank" rel="noopener noreferrer">
-                <Plus className="mr-2 h-4 w-4" />
-                Add New
-              </a>
-            </Button>
           </CardAction>
         </CardHeader>
         <CardContent>
@@ -282,7 +227,7 @@ function CowPage() {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No cows found.
+                      No dam AI records found.
                     </TableCell>
                   </TableRow>
                 )}
@@ -291,7 +236,7 @@ function CowPage() {
           </div>
           <div className="flex items-center justify-between pt-4">
             <p className="text-sm text-muted-foreground">
-              {table.getFilteredRowModel().rows.length} record(s) total
+              {table.getFilteredRowModel().rows.length} dam(s) total
             </p>
             <div className="flex gap-2">
               <Button
@@ -315,12 +260,46 @@ function CowPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={remarkDialogOpen} onOpenChange={setRemarkDialogOpen}>
+      <Dialog open={bullAiDialogOpen} onOpenChange={setBullAiDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Remark - {selectedRemark.tag}</DialogTitle>
-            <DialogDescription>{selectedRemark.remark}</DialogDescription>
+            <DialogTitle>Bull Semen AI - {selectedDam.tag}</DialogTitle>
+            <DialogDescription>
+              AI records using bull semen for this dam
+            </DialogDescription>
           </DialogHeader>
+          {selectedDam.bullAiRecords.length > 0 ? (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>#</TableHead>
+                    <TableHead>AI Code</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {selectedDam.bullAiRecords.map((record, i) => (
+                    <TableRow key={record.id}>
+                      <TableCell>{i + 1}</TableCell>
+                      <TableCell>
+                        <Link
+                          to={`/ai-records/${record.id}`}
+                          className={linkClass}
+                          onClick={() => setBullAiDialogOpen(false)}
+                        >
+                          {record.code}
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No bull semen AI records.
+            </p>
+          )}
         </DialogContent>
       </Dialog>
     </div>

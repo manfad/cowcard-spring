@@ -50,7 +50,7 @@ public class FeedlotService {
 
     public FeedlotDetail getDetail(Integer id) {
         Feedlot feedlot = feedlotRepository.findById(id).orElseThrow();
-        List<FeedlotCowSummary> cows = cowRepository.findByCurrentFeedlotId(id).stream()
+        List<FeedlotCowSummary> cows = cowRepository.findByCurrentFeedlotIdOrderByTag(id).stream()
                 .map(FeedlotCowSummary::from).toList();
         List<FeedlotHistorySummary> history = cowFeedlotHistoryRepository.findByFeedlot_IdOrderByMovedInAtDesc(id).stream()
                 .map(FeedlotHistorySummary::from).toList();

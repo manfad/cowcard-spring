@@ -47,9 +47,9 @@ public class AiRecordController {
         return ServerRes.success(aiRecordService.generateNextCode());
     }
 
-    @GetMapping("/dam-ai-overview")
-    public ServerRes<List<DamAiOverview>> getDamAiOverview() {
-        return ServerRes.success(aiRecordService.getDamAiOverview());
+    @GetMapping("/dam-ai-record")
+    public ServerRes<List<DamAiRecord>> getDamAiRecord() {
+        return ServerRes.success(aiRecordService.getDamAiRecord());
     }
 
     @GetMapping("/dam-ai-count/{damId}")

@@ -13,6 +13,10 @@ public interface AiRecordRepository extends JpaRepository<AiRecord, Integer> {
 
     List<AiRecord> findBySemenBullFalseOrderByDamIdAscAiDateAsc();
 
+    List<AiRecord> findBySemenBullTrueOrderByDamIdAscAiDateAsc();
+
+    List<AiRecord> findByDamIdOrderByAiDateDesc(Integer damId);
+
     List<AiRecord> findByAiById(Integer id);
 
     List<AiRecord> findByPreparedById(Integer id);

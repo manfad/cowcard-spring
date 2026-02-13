@@ -37,7 +37,7 @@ public class CowRoleService {
 
     public RoleWithCows getWithCows(Integer id) {
         CowRole role = cowRoleRepository.findById(id).orElseThrow();
-        List<RoleCowSummary> cows = cowRepository.findByRoleId(id).stream()
+        List<RoleCowSummary> cows = cowRepository.findByRoleIdOrderByTag(id).stream()
                 .map(RoleCowSummary::from).toList();
         return RoleWithCows.from(role, cows);
     }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   useReactTable,
@@ -37,6 +37,8 @@ export const Route = createFileRoute("/_auth/pregnancy-diagnosis/")({
 
 const columnHelper = createColumnHelper<PregnancyDiagnosis>();
 
+const linkClass = "text-primary underline";
+
 function PregnancyDiagnosisPage() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -61,11 +63,27 @@ function PregnancyDiagnosisPage() {
     }),
     columnHelper.accessor("aiRecord", {
       header: "AI Record",
-      cell: (info) => info.getValue()?.code ?? "-",
+      cell: (info) => {
+        const aiRecord = info.getValue();
+        if (!aiRecord) return "-";
+        return (
+          <Link to={`/ai-records/${aiRecord.id}`} className={linkClass}>
+            {aiRecord.code}
+          </Link>
+        );
+      },
     }),
     columnHelper.accessor("diagnosisBy", {
       header: "Diagnosis By",
-      cell: (info) => info.getValue()?.name ?? "-",
+      cell: (info) => {
+        const diagnosisBy = info.getValue();
+        if (!diagnosisBy) return "-";
+        return (
+          <Link to={`/inseminators/${diagnosisBy.id}`} className={linkClass}>
+            {diagnosisBy.name}
+          </Link>
+        );
+      },
     }),
     columnHelper.accessor("pdStatus", {
       header: "PD Status",

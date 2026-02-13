@@ -38,6 +38,8 @@ export const Route = createFileRoute("/_auth/ai-records/")({
 
 const columnHelper = createColumnHelper<AiRecord>();
 
+const linkClass = "text-primary underline";
+
 function AiRecordsPage() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -64,7 +66,7 @@ function AiRecordsPage() {
         return (
           <Link
             to={`/ai-records/${info.row.original.id}`}
-            className="font-medium text-primary hover:underline"
+            className={`font-medium ${linkClass}`}
           >
             {code}
           </Link>
@@ -73,11 +75,27 @@ function AiRecordsPage() {
     }),
     columnHelper.accessor("dam", {
       header: "Dam",
-      cell: (info) => info.getValue()?.tag ?? "-",
+      cell: (info) => {
+        const dam = info.getValue();
+        if (!dam) return "-";
+        return (
+          <Link to={`/cows/${dam.id}`} className={linkClass}>
+            {dam.tag}
+          </Link>
+        );
+      },
     }),
     columnHelper.accessor("semen", {
       header: "Semen",
-      cell: (info) => info.getValue()?.name ?? "-",
+      cell: (info) => {
+        const semen = info.getValue();
+        if (!semen) return "-";
+        return (
+          <Link to={`/semen/${semen.id}`} className={linkClass}>
+            {semen.name}
+          </Link>
+        );
+      },
     }),
     columnHelper.accessor("aiDate", {
       header: "AI Date",
@@ -92,15 +110,42 @@ function AiRecordsPage() {
     }),
     columnHelper.accessor("feedlot", {
       header: "Feedlot",
-      cell: (info) => info.getValue() ?? "-",
+      cell: (info) => {
+        const feedlot = info.getValue();
+        const feedlotId = info.row.original.feedlotId;
+        if (!feedlot) return "-";
+        if (feedlotId)
+          return (
+            <Link to={`/feedlots/${feedlotId}`} className={linkClass}>
+              {feedlot}
+            </Link>
+          );
+        return feedlot;
+      },
     }),
     columnHelper.accessor("aiBy", {
       header: "AI By",
-      cell: (info) => info.getValue()?.name ?? "-",
+      cell: (info) => {
+        const aiBy = info.getValue();
+        if (!aiBy) return "-";
+        return (
+          <Link to={`/inseminators/${aiBy.id}`} className={linkClass}>
+            {aiBy.name}
+          </Link>
+        );
+      },
     }),
     columnHelper.accessor("preparedBy", {
       header: "Prepared By",
-      cell: (info) => info.getValue()?.name ?? "-",
+      cell: (info) => {
+        const preparedBy = info.getValue();
+        if (!preparedBy) return "-";
+        return (
+          <Link to={`/inseminators/${preparedBy.id}`} className={linkClass}>
+            {preparedBy.name}
+          </Link>
+        );
+      },
     }),
     columnHelper.accessor("status", {
       header: "Status",

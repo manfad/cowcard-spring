@@ -52,7 +52,6 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Badge } from "@/components/ui/badge";
 import { CowSelectDialog } from "@/components/transponder/cow-select-dialog";
 
 export const Route = createFileRoute("/_auth/transponders/")({
@@ -118,7 +117,7 @@ function TranspondersPage() {
     number | null
   >(null);
   const [cowSelectSource, setCowSelectSource] = useState<"table" | "dialog">(
-    "table"
+    "table",
   );
   const [selectedCow, setSelectedCow] = useState<{
     id: number;
@@ -248,13 +247,13 @@ function TranspondersPage() {
                 invalidateAll();
                 toast.success("Cow assigned to transponder");
               },
-            }
+            },
           );
         }
         setAssigningTransponderId(null);
       }
     },
-    [cowSelectSource, assigningTransponderId, assignMutation, invalidateAll]
+    [cowSelectSource, assigningTransponderId, assignMutation, invalidateAll],
   );
 
   const handleUnassign = useCallback(
@@ -266,11 +265,10 @@ function TranspondersPage() {
         },
       });
     },
-    [unassignMutation, invalidateAll]
+    [unassignMutation, invalidateAll],
   );
 
-  const anyPending =
-    assignMutation.isPending || unassignMutation.isPending;
+  const anyPending = assignMutation.isPending || unassignMutation.isPending;
 
   // Dynamic columns that depend on handlers - memoized
   const columns = useMemo(
@@ -284,18 +282,15 @@ function TranspondersPage() {
           const transponderId = info.row.original.id;
           if (cow) {
             return (
-              <div className="flex items-center gap-2">
-                <Badge variant="outline">{cow.tag}</Badge>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => handleUnassign(transponderId)}
-                  disabled={anyPending}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-2.5 py-1 text-sm font-medium hover:bg-primary/80 transition-colors cursor-pointer disabled:opacity-50"
+                onClick={() => handleUnassign(transponderId)}
+                disabled={anyPending}
+              >
+                {cow.tag}
+                <X className="h-3 w-3" />
+              </button>
             );
           }
           return (
@@ -336,7 +331,7 @@ function TranspondersPage() {
         ),
       }),
     ],
-    [handleUnassign, handleAssignClick, handleEdit, anyPending]
+    [handleUnassign, handleAssignClick, handleEdit, anyPending],
   );
 
   const table = useReactTable({
@@ -386,7 +381,11 @@ function TranspondersPage() {
                     {hg.headers.map((h) => (
                       <TableHead
                         key={h.id}
-                        className={h.column.getCanSort() ? "cursor-pointer select-none" : ""}
+                        className={
+                          h.column.getCanSort()
+                            ? "cursor-pointer select-none"
+                            : ""
+                        }
                         onClick={h.column.getToggleSortingHandler()}
                       >
                         <div className="flex items-center gap-1">
@@ -394,9 +393,11 @@ function TranspondersPage() {
                             ? null
                             : flexRender(
                                 h.column.columnDef.header,
-                                h.getContext()
+                                h.getContext(),
                               )}
-                          {{ asc: " ↑", desc: " ↓" }[h.column.getIsSorted() as string] ?? null}
+                          {{ asc: " ↑", desc: " ↓" }[
+                            h.column.getIsSorted() as string
+                          ] ?? null}
                         </div>
                       </TableHead>
                     ))}
@@ -411,7 +412,7 @@ function TranspondersPage() {
                         <TableCell key={cell.id}>
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext()
+                            cell.getContext(),
                           )}
                         </TableCell>
                       ))}
@@ -486,6 +487,32 @@ function TranspondersPage() {
                   </FormItem>
                 )}
               />
+              <FormItem>
+                <FormLabel>Assigned Cow</FormLabel>
+                <div>
+                  {selectedCow ? (
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-2.5 py-1 text-sm font-medium hover:bg-primary/80 transition-colors cursor-pointer"
+                      onClick={() => setSelectedCow(null)}
+                    >
+                      {selectedCow.tag}
+                      <X className="h-3 w-3" />
+                    </button>
+                  ) : (
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => {
+                        setCowSelectSource("dialog");
+                        setCowSelectOpen(true);
+                      }}
+                    >
+                      Assign Cow
+                    </Button>
+                  )}
+                </div>
+              </FormItem>
               <FormField
                 control={form.control}
                 name="remark"
@@ -499,38 +526,6 @@ function TranspondersPage() {
                   </FormItem>
                 )}
               />
-              <FormItem>
-                <FormLabel>Assigned Cow</FormLabel>
-                <div>
-                  {selectedCow ? (
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">{selectedCow.tag}</Badge>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={() => setSelectedCow(null)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setCowSelectSource("dialog");
-                        setCowSelectOpen(true);
-                      }}
-                    >
-                      <Link className="mr-1 h-3 w-3" />
-                      Assign Cow
-                    </Button>
-                  )}
-                </div>
-              </FormItem>
               <DialogFooter>
                 <Button
                   type="button"

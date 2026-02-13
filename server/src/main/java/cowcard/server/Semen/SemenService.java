@@ -21,7 +21,7 @@ public class SemenService {
     private CowRepository cowRepository;
 
     public List<Semen> findAll() {
-        return semenRepository.findAll();
+        return semenRepository.findAllOrderByBullAscDateAsc();
     }
 
     public Semen create(Semen semen) {

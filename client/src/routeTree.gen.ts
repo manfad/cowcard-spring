@@ -26,13 +26,12 @@ import { Route as AuthPdStatusesIndexRouteImport } from './routes/_auth/pd-statu
 import { Route as AuthInseminatorsIndexRouteImport } from './routes/_auth/inseminators/index'
 import { Route as AuthFeedlotsIndexRouteImport } from './routes/_auth/feedlots/index'
 import { Route as AuthFeedlotManagementIndexRouteImport } from './routes/_auth/feedlot-management/index'
-import { Route as AuthDamAiOverviewIndexRouteImport } from './routes/_auth/dam-ai-overview/index'
+import { Route as AuthDamAiRecordIndexRouteImport } from './routes/_auth/dam-ai-record/index'
 import { Route as AuthCowsIndexRouteImport } from './routes/_auth/cows/index'
 import { Route as AuthCowStatusesIndexRouteImport } from './routes/_auth/cow-statuses/index'
 import { Route as AuthCowRolesIndexRouteImport } from './routes/_auth/cow-roles/index'
 import { Route as AuthCowGendersIndexRouteImport } from './routes/_auth/cow-genders/index'
 import { Route as AuthColorsIndexRouteImport } from './routes/_auth/colors/index'
-import { Route as AuthCalfStatusesIndexRouteImport } from './routes/_auth/calf-statuses/index'
 import { Route as AuthCalfRecordsIndexRouteImport } from './routes/_auth/calf-records/index'
 import { Route as AuthAiStatusesIndexRouteImport } from './routes/_auth/ai-statuses/index'
 import { Route as AuthAiRecordsIndexRouteImport } from './routes/_auth/ai-records/index'
@@ -133,9 +132,9 @@ const AuthFeedlotManagementIndexRoute =
     path: '/feedlot-management/',
     getParentRoute: () => AuthRoute,
   } as any)
-const AuthDamAiOverviewIndexRoute = AuthDamAiOverviewIndexRouteImport.update({
-  id: '/dam-ai-overview/',
-  path: '/dam-ai-overview/',
+const AuthDamAiRecordIndexRoute = AuthDamAiRecordIndexRouteImport.update({
+  id: '/dam-ai-record/',
+  path: '/dam-ai-record/',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthCowsIndexRoute = AuthCowsIndexRouteImport.update({
@@ -161,11 +160,6 @@ const AuthCowGendersIndexRoute = AuthCowGendersIndexRouteImport.update({
 const AuthColorsIndexRoute = AuthColorsIndexRouteImport.update({
   id: '/colors/',
   path: '/colors/',
-  getParentRoute: () => AuthRoute,
-} as any)
-const AuthCalfStatusesIndexRoute = AuthCalfStatusesIndexRouteImport.update({
-  id: '/calf-statuses/',
-  path: '/calf-statuses/',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthCalfRecordsIndexRoute = AuthCalfRecordsIndexRouteImport.update({
@@ -257,13 +251,12 @@ export interface FileRoutesByFullPath {
   '/ai-records/': typeof AuthAiRecordsIndexRoute
   '/ai-statuses/': typeof AuthAiStatusesIndexRoute
   '/calf-records/': typeof AuthCalfRecordsIndexRoute
-  '/calf-statuses/': typeof AuthCalfStatusesIndexRoute
   '/colors/': typeof AuthColorsIndexRoute
   '/cow-genders/': typeof AuthCowGendersIndexRoute
   '/cow-roles/': typeof AuthCowRolesIndexRoute
   '/cow-statuses/': typeof AuthCowStatusesIndexRoute
   '/cows/': typeof AuthCowsIndexRoute
-  '/dam-ai-overview/': typeof AuthDamAiOverviewIndexRoute
+  '/dam-ai-record/': typeof AuthDamAiRecordIndexRoute
   '/feedlot-management/': typeof AuthFeedlotManagementIndexRoute
   '/feedlots/': typeof AuthFeedlotsIndexRoute
   '/inseminators/': typeof AuthInseminatorsIndexRoute
@@ -295,13 +288,12 @@ export interface FileRoutesByTo {
   '/ai-records': typeof AuthAiRecordsIndexRoute
   '/ai-statuses': typeof AuthAiStatusesIndexRoute
   '/calf-records': typeof AuthCalfRecordsIndexRoute
-  '/calf-statuses': typeof AuthCalfStatusesIndexRoute
   '/colors': typeof AuthColorsIndexRoute
   '/cow-genders': typeof AuthCowGendersIndexRoute
   '/cow-roles': typeof AuthCowRolesIndexRoute
   '/cow-statuses': typeof AuthCowStatusesIndexRoute
   '/cows': typeof AuthCowsIndexRoute
-  '/dam-ai-overview': typeof AuthDamAiOverviewIndexRoute
+  '/dam-ai-record': typeof AuthDamAiRecordIndexRoute
   '/feedlot-management': typeof AuthFeedlotManagementIndexRoute
   '/feedlots': typeof AuthFeedlotsIndexRoute
   '/inseminators': typeof AuthInseminatorsIndexRoute
@@ -335,13 +327,12 @@ export interface FileRoutesById {
   '/_auth/ai-records/': typeof AuthAiRecordsIndexRoute
   '/_auth/ai-statuses/': typeof AuthAiStatusesIndexRoute
   '/_auth/calf-records/': typeof AuthCalfRecordsIndexRoute
-  '/_auth/calf-statuses/': typeof AuthCalfStatusesIndexRoute
   '/_auth/colors/': typeof AuthColorsIndexRoute
   '/_auth/cow-genders/': typeof AuthCowGendersIndexRoute
   '/_auth/cow-roles/': typeof AuthCowRolesIndexRoute
   '/_auth/cow-statuses/': typeof AuthCowStatusesIndexRoute
   '/_auth/cows/': typeof AuthCowsIndexRoute
-  '/_auth/dam-ai-overview/': typeof AuthDamAiOverviewIndexRoute
+  '/_auth/dam-ai-record/': typeof AuthDamAiRecordIndexRoute
   '/_auth/feedlot-management/': typeof AuthFeedlotManagementIndexRoute
   '/_auth/feedlots/': typeof AuthFeedlotsIndexRoute
   '/_auth/inseminators/': typeof AuthInseminatorsIndexRoute
@@ -375,13 +366,12 @@ export interface FileRouteTypes {
     | '/ai-records/'
     | '/ai-statuses/'
     | '/calf-records/'
-    | '/calf-statuses/'
     | '/colors/'
     | '/cow-genders/'
     | '/cow-roles/'
     | '/cow-statuses/'
     | '/cows/'
-    | '/dam-ai-overview/'
+    | '/dam-ai-record/'
     | '/feedlot-management/'
     | '/feedlots/'
     | '/inseminators/'
@@ -413,13 +403,12 @@ export interface FileRouteTypes {
     | '/ai-records'
     | '/ai-statuses'
     | '/calf-records'
-    | '/calf-statuses'
     | '/colors'
     | '/cow-genders'
     | '/cow-roles'
     | '/cow-statuses'
     | '/cows'
-    | '/dam-ai-overview'
+    | '/dam-ai-record'
     | '/feedlot-management'
     | '/feedlots'
     | '/inseminators'
@@ -452,13 +441,12 @@ export interface FileRouteTypes {
     | '/_auth/ai-records/'
     | '/_auth/ai-statuses/'
     | '/_auth/calf-records/'
-    | '/_auth/calf-statuses/'
     | '/_auth/colors/'
     | '/_auth/cow-genders/'
     | '/_auth/cow-roles/'
     | '/_auth/cow-statuses/'
     | '/_auth/cows/'
-    | '/_auth/dam-ai-overview/'
+    | '/_auth/dam-ai-record/'
     | '/_auth/feedlot-management/'
     | '/_auth/feedlots/'
     | '/_auth/inseminators/'
@@ -601,11 +589,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthFeedlotManagementIndexRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/dam-ai-overview/': {
-      id: '/_auth/dam-ai-overview/'
-      path: '/dam-ai-overview'
-      fullPath: '/dam-ai-overview/'
-      preLoaderRoute: typeof AuthDamAiOverviewIndexRouteImport
+    '/_auth/dam-ai-record/': {
+      id: '/_auth/dam-ai-record/'
+      path: '/dam-ai-record'
+      fullPath: '/dam-ai-record/'
+      preLoaderRoute: typeof AuthDamAiRecordIndexRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/cows/': {
@@ -641,13 +629,6 @@ declare module '@tanstack/react-router' {
       path: '/colors'
       fullPath: '/colors/'
       preLoaderRoute: typeof AuthColorsIndexRouteImport
-      parentRoute: typeof AuthRoute
-    }
-    '/_auth/calf-statuses/': {
-      id: '/_auth/calf-statuses/'
-      path: '/calf-statuses'
-      fullPath: '/calf-statuses/'
-      preLoaderRoute: typeof AuthCalfStatusesIndexRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/calf-records/': {
@@ -759,13 +740,12 @@ interface AuthRouteChildren {
   AuthAiRecordsIndexRoute: typeof AuthAiRecordsIndexRoute
   AuthAiStatusesIndexRoute: typeof AuthAiStatusesIndexRoute
   AuthCalfRecordsIndexRoute: typeof AuthCalfRecordsIndexRoute
-  AuthCalfStatusesIndexRoute: typeof AuthCalfStatusesIndexRoute
   AuthColorsIndexRoute: typeof AuthColorsIndexRoute
   AuthCowGendersIndexRoute: typeof AuthCowGendersIndexRoute
   AuthCowRolesIndexRoute: typeof AuthCowRolesIndexRoute
   AuthCowStatusesIndexRoute: typeof AuthCowStatusesIndexRoute
   AuthCowsIndexRoute: typeof AuthCowsIndexRoute
-  AuthDamAiOverviewIndexRoute: typeof AuthDamAiOverviewIndexRoute
+  AuthDamAiRecordIndexRoute: typeof AuthDamAiRecordIndexRoute
   AuthFeedlotManagementIndexRoute: typeof AuthFeedlotManagementIndexRoute
   AuthFeedlotsIndexRoute: typeof AuthFeedlotsIndexRoute
   AuthInseminatorsIndexRoute: typeof AuthInseminatorsIndexRoute
@@ -792,13 +772,12 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthAiRecordsIndexRoute: AuthAiRecordsIndexRoute,
   AuthAiStatusesIndexRoute: AuthAiStatusesIndexRoute,
   AuthCalfRecordsIndexRoute: AuthCalfRecordsIndexRoute,
-  AuthCalfStatusesIndexRoute: AuthCalfStatusesIndexRoute,
   AuthColorsIndexRoute: AuthColorsIndexRoute,
   AuthCowGendersIndexRoute: AuthCowGendersIndexRoute,
   AuthCowRolesIndexRoute: AuthCowRolesIndexRoute,
   AuthCowStatusesIndexRoute: AuthCowStatusesIndexRoute,
   AuthCowsIndexRoute: AuthCowsIndexRoute,
-  AuthDamAiOverviewIndexRoute: AuthDamAiOverviewIndexRoute,
+  AuthDamAiRecordIndexRoute: AuthDamAiRecordIndexRoute,
   AuthFeedlotManagementIndexRoute: AuthFeedlotManagementIndexRoute,
   AuthFeedlotsIndexRoute: AuthFeedlotsIndexRoute,
   AuthInseminatorsIndexRoute: AuthInseminatorsIndexRoute,
