@@ -38,4 +38,7 @@ public class PdStatus extends BaseEntity implements Serializable {
 
     @Column(name = "active")
     private Boolean active;
+
+    @Column(name = "color")
+    private String color;
 }

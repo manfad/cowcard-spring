@@ -28,6 +28,7 @@ import type {
   CowRoleFormData,
   CowStatus,
   PdStatus,
+  PdStatusFormData,
   LookupFormData,
   DamOption,
   User,
@@ -271,9 +272,9 @@ export const pdStatusApi = {
   getAll: () => api.get<ServerRes<PdStatus[]>>("/pd-status/all"),
   toggleActive: (id: number) =>
     api.put<ServerRes<PdStatus>>(`/pd-status/toggle-active/${id}`),
-  create: (data: LookupFormData) =>
+  create: (data: PdStatusFormData) =>
     api.post<ServerRes<PdStatus>>("/pd-status", data),
-  update: (id: number, data: LookupFormData) =>
+  update: (id: number, data: PdStatusFormData) =>
     api.put<ServerRes<PdStatus>>(`/pd-status/${id}`, data),
 };
 

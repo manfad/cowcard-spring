@@ -46,7 +46,15 @@ export interface CowRole extends LookupEntity {
 export interface CowStatus extends LookupEntity {
   cowRoles: CowRole[];
 }
-export type PdStatus = LookupEntity;
+export interface PdStatus extends LookupEntity {
+  color: string | null;
+}
+
+export interface PdStatusFormData {
+  name: string;
+  remark: string;
+  color: string;
+}
 
 export interface CowRoleFormData {
   name: string;
@@ -195,7 +203,7 @@ export interface PregnancyDiagnosis {
   aiDate: string;
   aiRecord: { id: number; code: string } | null;
   diagnosisBy: { id: number; name: string } | null;
-  pdStatus: { id: number; name: string } | null;
+  pdStatus: { id: number; name: string; color: string | null } | null;
 }
 
 export interface FeedlotWithCows {

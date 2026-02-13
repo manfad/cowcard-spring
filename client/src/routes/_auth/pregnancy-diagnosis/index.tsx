@@ -13,6 +13,7 @@ import {
 } from "@tanstack/react-table";
 import { differenceInDays, formatDistanceToNow } from "date-fns";
 import { Pencil } from "lucide-react";
+import { colorBtnMap } from "@/components/ui/color-picker";
 import { toast } from "sonner";
 import { pregnancyDiagnosisApi, pdStatusApi, inseminatorApi, systemSettingApi } from "@/lib/api";
 import type { PregnancyDiagnosis } from "@/lib/types";
@@ -201,11 +202,12 @@ function PregnancyDiagnosisPage() {
       header: "PD Status",
       cell: (info) => {
         const status = info.getValue();
+        const colorClass = status?.color ? colorBtnMap[status.color] : "";
         return (
           <Button
             size="sm"
-            variant="outline"
-            className="h-auto px-2 py-1"
+            variant={status?.color ? "default" : "outline"}
+            className={"h-auto px-2 py-1 " + colorClass}
             onClick={() => handleStatusClick(info.row.original)}
           >
             {status?.name ?? "-"}

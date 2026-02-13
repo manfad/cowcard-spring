@@ -34,6 +34,7 @@ public class PdStatusService {
         PdStatus e = pdStatusRepository.findById(id).orElseThrow();
         e.setName(pdStatus.getName());
         e.setRemark(pdStatus.getRemark());
+        e.setColor(pdStatus.getColor());
         return pdStatusRepository.save(e);
     }
 }
