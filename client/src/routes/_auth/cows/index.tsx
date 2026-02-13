@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -141,9 +141,12 @@ const staticColumns = [
   }),
 ];
 
+type CowFilter = "Male" | "Female" | "Dam" | "Calf" | null;
+
 function CowPage() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [activeFilter, setActiveFilter] = useState<CowFilter>(null);
   const [remarkDialogOpen, setRemarkDialogOpen] = useState(false);
   const [selectedRemark, setSelectedRemark] = useState<{
     tag: string;
@@ -157,6 +160,14 @@ function CowPage() {
       return res.data.data ?? [];
     },
   });
+
+  const filteredCows = useMemo(() => {
+    if (!activeFilter) return cows;
+    if (activeFilter === "Male" || activeFilter === "Female") {
+      return cows.filter((c) => c.gender === activeFilter);
+    }
+    return cows.filter((c) => c.role === activeFilter);
+  }, [cows, activeFilter]);
 
   const handleRemarkClick = (tag: string, remark: string | null) => {
     setSelectedRemark({ tag, remark: remark || "No remark" });
@@ -191,7 +202,7 @@ function CowPage() {
   ];
 
   const table = useReactTable({
-    data: cows,
+    data: filteredCows,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -214,7 +225,21 @@ function CowPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Cow List</CardTitle>
+          <div className="flex items-center gap-2">
+            <CardTitle>Cow List</CardTitle>
+            {(["Male", "Female", "Dam", "Calf"] as const).map((f) => (
+              <Button
+                key={f}
+                size="sm"
+                variant={activeFilter === f ? "default" : "outline"}
+                onClick={() =>
+                  setActiveFilter((prev) => (prev === f ? null : f))
+                }
+              >
+                {f}
+              </Button>
+            ))}
+          </div>
           <CardAction className="flex items-center gap-2">
             <Input
               placeholder="Search..."

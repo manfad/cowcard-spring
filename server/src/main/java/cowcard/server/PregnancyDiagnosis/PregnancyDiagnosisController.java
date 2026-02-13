@@ -25,7 +25,8 @@ public class PregnancyDiagnosisController {
     }
 
     public record RegisterCalfRequest(String tag, Integer genderId, String dob,
-                                       BigDecimal weight, Integer colorId, Integer feedlotId, String remark) {
+                                       BigDecimal weight, Integer colorId, Integer feedlotId, String remark,
+                                       Boolean stillBirth) {
     }
 
     @GetMapping("/all")
@@ -43,7 +44,8 @@ public class PregnancyDiagnosisController {
     public ServerRes<String> registerCalf(@PathVariable Integer id,
                                            @RequestBody RegisterCalfRequest request) {
         pregnancyDiagnosisService.registerCalf(id, request.tag(), request.genderId(),
-                request.dob(), request.weight(), request.colorId(), request.feedlotId(), request.remark());
+                request.dob(), request.weight(), request.colorId(), request.feedlotId(), request.remark(),
+                request.stillBirth());
         return ServerRes.success("Calf registered successfully");
     }
 }

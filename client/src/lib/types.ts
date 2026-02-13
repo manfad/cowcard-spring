@@ -222,6 +222,7 @@ export interface RegisterCalfData {
   colorId: number;
   feedlotId: number | null;
   remark: string;
+  stillBirth: boolean;
 }
 
 export interface FeedlotWithCows {

@@ -19,7 +19,7 @@ import cowcard.server.Common.BaseEntity;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-// Lookup IDs: 1=Pending, 2=AI Failed, 3=Pregnant, 4=No Pregnant, 5=Late Gestation, 6=Gestation, 7=NEW
+// Lookup IDs: 1=Pending, 2=AI Failed, 3=Pregnant, 4=No Pregnant, 5=Late Gestation, 6=Gestation, 7=NEW, 8=Complete, 9=Still Birth
 @Entity
 @Table(name = "pd_status")
 public class PdStatus extends BaseEntity implements Serializable {

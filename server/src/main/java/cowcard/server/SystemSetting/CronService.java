@@ -48,8 +48,8 @@ public class CronService {
 
         int thresholdDays = pdDays - 5;
 
-        // Find all PDs with status NEW (id=0)
-        List<PregnancyDiagnosis> newPds = pregnancyDiagnosisRepository.findByPdStatusId(0);
+        // Find all PDs with status NEW (id=7)
+        List<PregnancyDiagnosis> newPds = pregnancyDiagnosisRepository.findByPdStatusId(7);
         int updated = 0;
 
         for (PregnancyDiagnosis pd : newPds) {

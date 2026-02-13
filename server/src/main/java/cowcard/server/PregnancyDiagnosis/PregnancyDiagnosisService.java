@@ -60,8 +60,19 @@ public class PregnancyDiagnosisService {
 
     @Transactional
     public void registerCalf(Integer pdId, String tag, Integer genderId, String dob,
-                             BigDecimal weight, Integer colorId, Integer feedlotId, String remark) {
+                             BigDecimal weight, Integer colorId, Integer feedlotId, String remark,
+                             Boolean stillBirth) {
         PregnancyDiagnosis pd = pregnancyDiagnosisRepository.findById(pdId).orElseThrow();
+
+        if (stillBirth != null && stillBirth) {
+            // Stillbirth: only update PD status, no cow/calf record
+            PdStatus status = new PdStatus();
+            status.setId(9); // Still Birth
+            pd.setPdStatus(status);
+            pregnancyDiagnosisRepository.save(pd);
+            return;
+        }
+
         AiRecord aiRecord = pd.getAiRecord();
 
         // Create the calf cow
@@ -108,5 +119,11 @@ public class PregnancyDiagnosisService {
         calfRecord.setAiRecord(aiRecord);
         calfRecord.setPregnancyDiagnosis(pd);
         calfRecordRepository.save(calfRecord);
+
+        // Update PD status to Complete
+        PdStatus completeStatus = new PdStatus();
+        completeStatus.setId(8); // Complete
+        pd.setPdStatus(completeStatus);
+        pregnancyDiagnosisRepository.save(pd);
     }
 }

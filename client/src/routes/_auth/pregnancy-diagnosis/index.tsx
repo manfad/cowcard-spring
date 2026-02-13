@@ -38,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -80,15 +81,25 @@ const columnHelper = createColumnHelper<PregnancyDiagnosis>();
 
 const linkClass = "text-primary underline";
 
-const calfSchema = z.object({
-  tag: z.string().min(1, "Tag is required"),
-  genderId: z.string().min(1, "Gender is required"),
-  dob: z.string().min(1, "Date of birth is required"),
-  weight: z.string(),
-  colorId: z.string().min(1, "Color is required"),
-  feedlotId: z.string(),
-  remark: z.string(),
-});
+const calfSchema = z
+  .object({
+    stillBirth: z.boolean(),
+    tag: z.string(),
+    genderId: z.string(),
+    dob: z.string(),
+    weight: z.string(),
+    colorId: z.string(),
+    feedlotId: z.string(),
+    remark: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.stillBirth) {
+      if (!data.tag) ctx.addIssue({ code: "custom", path: ["tag"], message: "Tag is required" });
+      if (!data.genderId) ctx.addIssue({ code: "custom", path: ["genderId"], message: "Gender is required" });
+      if (!data.dob) ctx.addIssue({ code: "custom", path: ["dob"], message: "Date of birth is required" });
+      if (!data.colorId) ctx.addIssue({ code: "custom", path: ["colorId"], message: "Color is required" });
+    }
+  });
 
 type CalfFormValues = z.infer<typeof calfSchema>;
 
@@ -185,6 +196,7 @@ function PregnancyDiagnosisPage() {
   const calfForm = useForm<CalfFormValues>({
     resolver: zodResolver(calfSchema),
     defaultValues: {
+      stillBirth: false,
       tag: "",
       genderId: "",
       dob: format(new Date(), "yyyy-MM-dd"),
@@ -212,6 +224,7 @@ function PregnancyDiagnosisPage() {
     if (statusId === 5) {
       setSelectedRecord(record);
       calfForm.reset({
+        stillBirth: false,
         tag: "",
         genderId: "",
         dob: format(new Date(), "yyyy-MM-dd"),
@@ -248,11 +261,12 @@ function PregnancyDiagnosisPage() {
   const handleCalfSubmit = (data: CalfFormValues) => {
     if (!selectedRecord) return;
     const payload: RegisterCalfData = {
+      stillBirth: data.stillBirth,
       tag: data.tag,
-      genderId: parseInt(data.genderId),
+      genderId: data.genderId ? parseInt(data.genderId) : 0,
       dob: data.dob,
       weight: data.weight ? parseFloat(data.weight) : null,
-      colorId: parseInt(data.colorId),
+      colorId: data.colorId ? parseInt(data.colorId) : 0,
       feedlotId: data.feedlotId ? parseInt(data.feedlotId) : null,
       remark: data.remark,
     };
@@ -312,7 +326,7 @@ function PregnancyDiagnosisPage() {
             <Progress
               value={pct}
               className="h-2"
-              indicatorClassName={isPending ? "bg-yellow-500" : undefined}
+              indicatorClassName={isPending || row.original.pdStatusId === 5 ? "bg-yellow-500" : undefined}
             />
             <span className="text-xs text-muted-foreground">
               {days}/{totalDays} days
@@ -336,7 +350,7 @@ function PregnancyDiagnosisPage() {
           <Button
             size="sm"
             variant={pdStatusColor ? "default" : "outline"}
-            className={"h-auto px-2 py-1 " + colorClass}
+            className={"h-auto px-2 py-1 disabled:opacity-100 " + colorClass}
             disabled={!isEnabled}
             onClick={() => handleStatusButtonClick(row.original)}
           >
@@ -581,6 +595,23 @@ function PregnancyDiagnosisPage() {
             >
               <FormField
                 control={calfForm.control}
+                name="stillBirth"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel className="!mt-0">Still Birth</FormLabel>
+                  </FormItem>
+                )}
+              />
+              {!calfForm.watch("stillBirth") && (
+                <>
+              <FormField
+                control={calfForm.control}
                 name="tag"
                 render={({ field }) => (
                   <FormItem>
@@ -742,6 +773,8 @@ function PregnancyDiagnosisPage() {
                   </FormItem>
                 )}
               />
+              </>
+              )}
               <DialogFooter>
                 <Button
                   type="button"
@@ -751,7 +784,11 @@ function PregnancyDiagnosisPage() {
                   Cancel
                 </Button>
                 <Button type="submit" disabled={calfMutation.isPending}>
-                  {calfMutation.isPending ? "Registering..." : "Register Calf"}
+                  {calfMutation.isPending
+                    ? "Submitting..."
+                    : calfForm.watch("stillBirth")
+                      ? "Record Still Birth"
+                      : "Register Calf"}
                 </Button>
               </DialogFooter>
             </form>
