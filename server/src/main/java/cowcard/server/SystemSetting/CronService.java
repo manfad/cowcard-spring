@@ -48,8 +48,8 @@ public class CronService {
 
         int thresholdDays = pdDays - 5;
 
-        // Find all PDs with status NEW (id=7)
-        List<PregnancyDiagnosis> newPds = pregnancyDiagnosisRepository.findByPdStatusId(7);
+        // Find all PDs with status NEW (id=0)
+        List<PregnancyDiagnosis> newPds = pregnancyDiagnosisRepository.findByPdStatusId(0);
         int updated = 0;
 
         for (PregnancyDiagnosis pd : newPds) {
@@ -68,6 +68,45 @@ public class CronService {
             }
         }
 
-        log.info("Cron job completed: {} PD records transitioned from NEW to Pending", updated);
+        log.info("Cron: {} PD records transitioned from NEW to Pending", updated);
+
+        // Rule 2: Pregnant (id=3) → Late Gestation (id=6) when 30 days before due date
+        SystemSetting pregnantDaySetting = systemSettingRepository.findById(2).orElse(null);
+        if (pregnantDaySetting == null || pregnantDaySetting.getValue() == null) {
+            log.warn("System setting id=2 (pregnant day total) not found, skipping Pregnant→Late Gestation rule");
+            return;
+        }
+
+        int pregnantDays;
+        try {
+            pregnantDays = Integer.parseInt(pregnantDaySetting.getValue());
+        } catch (NumberFormatException e) {
+            log.warn("System setting id=2 value is not a number: {}", pregnantDaySetting.getValue());
+            return;
+        }
+
+        int gestationThreshold = pregnantDays - 30;
+
+        List<PregnancyDiagnosis> pregnantPds = pregnancyDiagnosisRepository.findByPdStatusId(3);
+        int gestationUpdated = 0;
+
+        for (PregnancyDiagnosis pd : pregnantPds) {
+            if (pd.getPregnantDate() == null || pd.getPregnantDate().isBlank()) {
+                continue;
+            }
+            LocalDate pregnantDate = LocalDate.parse(pd.getPregnantDate());
+            long daysSincePregnant = ChronoUnit.DAYS.between(pregnantDate, LocalDate.now());
+
+            if (daysSincePregnant >= gestationThreshold) {
+                PdStatus lateGestationStatus = new PdStatus();
+                lateGestationStatus.setId(6); // Late Gestation
+                pd.setPdStatus(lateGestationStatus);
+                pregnancyDiagnosisRepository.save(pd);
+                gestationUpdated++;
+            }
+        }
+
+        log.info("Cron: {} PD records transitioned from Pregnant to Late Gestation", gestationUpdated);
+        log.info("Cron job completed");
     }
 }
